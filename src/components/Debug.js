@@ -1,7 +1,7 @@
 import React from 'react'
 import useForm from '../hooks/useForm'
 
-export default () => {
+const Debug = () => {
   const { meta, fields, values, cleanValues } = useForm()
   return (
     <>
@@ -16,3 +16,5 @@ export default () => {
     </>
   )
 }
+
+export default Debug
