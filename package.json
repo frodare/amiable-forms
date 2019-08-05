@@ -1,5 +1,5 @@
 {
-  "name": "react-useform",
+  "name": "amiable-forms",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -11,17 +11,27 @@
   "keywords": [
     "react",
     "form",
-    "hooks",
-    "useForm"
+    "hooks"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/frodare/react-useform.git"
+    "url": "git+https://github.com/frodare/amiable-forms.git"
   },
   "author": "Charles Howard",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/frodare/react-useform/issues"
+    "url": "https://github.com/frodare/amiable-forms/issues"
   },
-  "homepage": "https://github.com/frodare/react-useform#readme"
+  "homepage": "https://github.com/frodare/amiable-forms#readme",
+  "dependencies": {
+    "lodash": "^4.17.15"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.1.0",
+    "@babel/preset-react": "^7.0.0"
+  }
 }
