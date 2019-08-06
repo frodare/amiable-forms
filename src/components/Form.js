@@ -67,7 +67,8 @@ const Form = props => {
   const reset = () => setValues(cleanValuesContainer.current)
   const clear = () => setValues({})
 
-  const onSubmit = () => process(values, props)
+  const submit = (...args) => process(values, ...args)
+  const onSubmit = ev => submit(values, props, ev)
 
   const meta = {
     touched,
@@ -87,6 +88,7 @@ const Form = props => {
       setValues,
       reset,
       clear,
+      submit,
       onSubmit
     }}>
       {children}
