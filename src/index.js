@@ -4,6 +4,11 @@ import _useForm from './hooks/useForm'
 import _useField from './hooks/useField'
 import _useArrayField from './hooks/useArrayField'
 
+// stop submit if invalid
+
+// form transforms
+
+// visited only after blur
 
 export const Form = _Form
 export const Debug = _Debug
