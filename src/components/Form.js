@@ -25,8 +25,12 @@ const valuesToFields = (values, previousFields, keepMeta) => {
 }
 
 const Form = props => {
-  const { children, process = () => {}, processInvalid = () => {}, validate = () => true, initialValues = {} } = props
-  const [fields, setFields] = useState({})
+  const { children, process = () => {}, processInvalid = () => {}, validate = () => true, initialValues = {}, transformer = f => f.next } = props
+  const [fields, _setFields] = useState({})
+  const setFields = setter => _setFields(current => {
+    const next = setter(current)
+    return transformer({ current, next })
+  })
   useEffect(() => setValues(initialValues), [])
   const cleanValuesContainer = useRef({})
   const metaContainer = useRef({
@@ -84,7 +88,7 @@ const Form = props => {
     if (valid) {
       process(values, ...args)
     } else {
-      setFields(f => ({...f}))
+      setFields(f => ({ ...f }))
       processInvalid(meta, fields)
     }
   }

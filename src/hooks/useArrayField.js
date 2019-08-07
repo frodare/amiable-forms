@@ -9,7 +9,7 @@ export default ({ name, Component, size = 0 }) => {
     setValues({ [name]: arr }, { keepMeta: true, merge: true })
   }
 
-  const push = () => setValue([ ...arr, '' ])
+  const push = () => setValue([...arr, ''])
   const pop = () => setValue(arr.slice(0, -1))
 
   const elements = arr.map((_, i) =>

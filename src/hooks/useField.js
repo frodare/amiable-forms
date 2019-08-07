@@ -4,7 +4,6 @@ import useForm from './useForm'
 const useRegister = ({ name, setValue, resetField }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    // setValue(initalValue)
     return () => resetField(name)
   }, [])
 }

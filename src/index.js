@@ -4,8 +4,6 @@ import _useForm from './hooks/useForm'
 import _useField from './hooks/useField'
 import _useArrayField from './hooks/useArrayField'
 
-// form transforms
-
 // visited only after blur
 
 export const Form = _Form
