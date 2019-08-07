@@ -25,11 +25,14 @@ const valuesToFields = (values, previousFields, keepMeta) => {
 }
 
 const Form = props => {
-  const { children, process = () => {}, validate = () => true, initialValues = {} } = props
+  const { children, process = () => {}, processInvalid = () => {}, validate = () => true, initialValues = {} } = props
   const [fields, setFields] = useState({})
   useEffect(() => setValues(initialValues), [])
   const cleanValuesContainer = useRef({})
-  const previousVisitedContainer = useRef(false)
+  const metaContainer = useRef({
+    visited: false,
+    submitted: false
+  })
   const values = compileValues(fields)
 
   const setValues = (changedValues, { keepMeta = false, merge = false } = {}) => {
@@ -43,13 +46,14 @@ const Form = props => {
   const setField = (name, field) => setFields(fields => ({ ...fields, [name]: field }))
 
   const runValidations = () => {
-    const fieldsAreValid = Object.values(fields).reduce((valid, field) => valid && (field.valid === undefined ? true : !!field.value), true)
+    const fieldsAreValid = Object.values(fields).reduce((valid, field) => valid && (field.valid === undefined ? true : !!field.valid), true)
     const formIsvalid = !!validate(values)
     return fieldsAreValid && formIsvalid
   }
 
   const touched = hasFlag(fields, 'touched')
-  const visited = previousVisitedContainer.current || hasFlag(fields, 'visited')
+  const visited = metaContainer.current.visited || hasFlag(fields, 'visited')
+  const submitted = metaContainer.current.submitted
 
   if (!visited) {
     cleanValuesContainer.current = { ...values }
@@ -67,15 +71,25 @@ const Form = props => {
   const reset = () => setValues(cleanValuesContainer.current)
   const clear = () => setValues({})
 
-  const submit = (...args) => process(values, ...args)
-  const onSubmit = ev => submit(values, props, ev)
-
   const meta = {
     touched,
     valid,
     dirty,
-    visited
+    visited,
+    submitted
   }
+
+  const submit = (...args) => {
+    metaContainer.current.submitted = true
+    if (valid) {
+      process(values, ...args)
+    } else {
+      setFields(f => ({...f}))
+      processInvalid(meta, fields)
+    }
+  }
+
+  const onSubmit = ev => submit(values, props, ev)
 
   return (
     <formContext.Provider value={{

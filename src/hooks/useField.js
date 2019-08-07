@@ -14,7 +14,7 @@ const defaultParse = value => !value && value !== 0 ? undefined : value
 const defaultFormat = value => value || ''
 
 export default ({ name, validators = [], parse = defaultParse, format = defaultFormat }) => {
-  const { fields, setField, resetField } = useForm()
+  const { fields, setField, resetField, meta } = useForm()
 
   const field = fields[name] || {}
 
@@ -44,6 +44,7 @@ export default ({ name, validators = [], parse = defaultParse, format = defaultF
 
   return {
     ...field,
+    submitted: meta.submitted,
     setValue,
     setVisited,
     inputProps: {
