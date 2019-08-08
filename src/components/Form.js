@@ -1,7 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useReducer } from 'react'
 import set from 'lodash/set'
 import isEqual from 'lodash/isEqual'
 import flatten from '../util/flatten'
+import reducer, { initialState } from './reducer'
+import * as actions from './actions'
+import * as metaKeys from './metaKeys'
 
 export const formContext = React.createContext({})
 
@@ -45,15 +48,17 @@ const Form = props => {
     initialValues
   } = props
 
-  const [fields, setFields] = useState({})
-  const [values, setValues] = useState(initialValues || {})
-  const [meta, setMeta] = useState(defaultFormMeta)
-  const ref = useRef({})
+  // const [fields, setFields] = useState({})
+  // const [values, setValues] = useState(initialValues || {})
+  // const [meta, setMeta] = useState(defaultFormMeta)
 
-  if (ref.current !== values) {
-    console.log('************* VALUES CHANGED', values)
-    ref.current = values
-  }
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  // const ref = useRef({})
+  // if (ref.current !== values) {
+  //   console.log('************* VALUES CHANGED', values)
+  //   ref.current = values
+  // }
 
   // TODO: transfer support
   // const setFields = setter => _setFields(current => {
@@ -101,26 +106,24 @@ const Form = props => {
   //   submitted
   // }
 
-  const setField = (name, field) => setFields(fields => ({ ...fields, [name]: field }))
-  const setMetaValue = (name, value) => setMeta(fields => ({ ...fields, [name]: value }))
+  //setFields(fields => ({ ...fields, [name]: field }))
+  //setMeta(fields => ({ ...fields, [name]: value }))
 
-  const removeField = name => setFields(fields => {
-    const newFields = { ...fields }
-    delete newFields[name]
-    return newFields
-  })
-
+  const setField = (name, field) => dispatch({ type: actions.SET_FIELD, name, ...field })
+  const setValue = (name, value) => dispatch({ type: actions.SET_FIELD, name, value })
+  const setMetaValue = (key, value) => dispatch({ type: actions.SET_META, key, value })
+  const removeField = name => dispatch({ type: actions.REMOVE_FIELD, name })
+  const reset = () => dispatch({ type: actions.RESET })
+  const setValues = values => dispatch({ type: actions.SET_VALUES, values })
   const clear = () => setValues({})
 
-  const reset = () => console.log('NOT YET SUPPORTED')
-
   const submit = (...args) => {
-    if (meta.valid) {
-      process(values, ...args)
+    if (state.meta.valid) {
+      process(state.values, ...args)
     } else {
-      processInvalid(meta, fields)
+      processInvalid(state.meta, state.fields)
     }
-    setMetaValue('submitted', true)
+    setMetaValue(metaKeys.SUBMITTED, true)
   }
 
   const onSubmit = ev => submit(props, ev)
@@ -130,12 +133,11 @@ const Form = props => {
 
   return (
     <formContext.Provider value={{
-      fields,
-      values,
-      meta,
+      fields: state.fields,
+      values: state.values,
+      meta: state.meta,
       setField,
       removeField,
-      setFields,
       setValues,
       reset,
       clear,

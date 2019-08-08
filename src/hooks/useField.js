@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import useForm from './useForm'
 
 const useRegister = ({ name, setValue, resetField }) => {
@@ -30,20 +30,22 @@ const testField = {
 }
 
 export default ({ name, validators = [], parse = defaultParse, format = defaultFormat }) => {
-  const { fields, setField, resetField, meta } = useForm()
+  const { values, fields, setField, resetField, meta } = useForm()
   const field = fields[name] || defaultField
+  const value = values[name]
 
   // useRegister({ name, setValue, resetField })
 
   return useMemo(() => {
     const t0 = window.performance.now()
+
     const setValue = (val, { touch = false } = {}) => {
       const value = parse(val, name)
       const error = validators.reduce((error, validator) => error || validator(value), '')
       const valid = !error
       const touched = !!(field.touched || touch)
       const visited = touched || field.visited || false
-      setField(name, { value, error, valid, touched, visited })
+      setField(name, { error, valid, touched, visited, value })
     }
 
     if (field.touched === undefined) {
@@ -67,10 +69,10 @@ export default ({ name, validators = [], parse = defaultParse, format = defaultF
       setValue,
       setVisited,
       inputProps: {
-        value: format(field.value),
+        value: format(value),
         onChange,
         onFocus: setVisited
       }
     }
-  }, [field])
+  }, [field, value])
 }

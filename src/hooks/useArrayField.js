@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import useForm from './useForm'
 
-const DEFAULT = [{}]
+const DEFAULT = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
 
 export default ({ name, Component, size = 0 }) => {
   const t0 = window.performance.now()

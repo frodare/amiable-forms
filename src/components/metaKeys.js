@@ -1,0 +1,5 @@
+export const TOUCHED = 'touched'
+export const SUBMITTED = 'submitted'
+export const VISITED = 'visited'
+export const VALID = 'valid'
+export const DIRTY = 'dirty'
