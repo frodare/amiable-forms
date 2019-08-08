@@ -1,55 +1,32 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo } from 'react'
 import useForm from './useForm'
-
-const useRegister = ({ name, setValue, resetField }) => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    return () => resetField(name)
-  }, [])
-}
+import get from 'lodash/get'
 
 const defaultParse = value => !value && value !== 0 ? undefined : value
 
-const defaultFormat = value => value || ''
+const DEFAULT_FORMAT = value => value || ''
+const DEFAULT_FIELD = {}
 
-const defaultField = {}
+export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_FORMAT }) => {
+  const { values, fields, setField, setValue, removeField, meta } = useForm()
+  const field = fields[name] || DEFAULT_FIELD
+  const value = format(get(values, name))
 
-const testField = {
-  value: 'test',
-  touched: false,
-  visted: false,
-  error: '',
-  submitted: false,
-  setValue: () => {},
-  setVisited: () => {},
-  inputProps: {
-    value: 'testinput',
-    onChange: () => {},
-    onFocus: () => {}
-  }
-}
-
-export default ({ name, validators = [], parse = defaultParse, format = defaultFormat }) => {
-  const { values, fields, setField, resetField, meta } = useForm()
-  const field = fields[name] || defaultField
-  const value = values[name]
-
-  // useRegister({ name, setValue, resetField })
+  useEffect(() => () => removeField(name), [])
 
   return useMemo(() => {
-    const t0 = window.performance.now()
-
-    const setValue = (val, { touch = false } = {}) => {
+    const _setValue = (val, { touch = false } = {}) => {
       const value = parse(val, name)
       const error = validators.reduce((error, validator) => error || validator(value), '')
       const valid = !error
       const touched = !!(field.touched || touch)
       const visited = touched || field.visited || false
-      setField(name, { error, valid, touched, visited, value })
+      setField(name, { error, valid, touched, visited })
+      setValue(name, value)
     }
 
     if (field.touched === undefined) {
-      setValue(field.value)
+      _setValue(value)
     }
 
     const setVisited = () => {
@@ -58,18 +35,17 @@ export default ({ name, validators = [], parse = defaultParse, format = defaultF
 
     const onChange = event => {
       event.persist()
-      setValue(event.target.value, { touch: true })
+      _setValue(event.target.value, { touch: true })
     }
 
-    const t1 = window.performance.now()
-    console.log(name, (t1 - t0).toFixed(2))
     return {
       ...field,
+      value,
       submitted: meta.submitted,
-      setValue,
+      setValue: _setValue,
       setVisited,
       inputProps: {
-        value: format(value),
+        value,
         onChange,
         onFocus: setVisited
       }

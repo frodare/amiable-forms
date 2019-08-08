@@ -1,35 +1,27 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import useForm from './useForm'
+import get from 'lodash/get'
 
-const DEFAULT = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
+const DEFAULT = []
 
 export default ({ name, Component, size = 0 }) => {
-  const t0 = window.performance.now()
+  const { values, setValue } = useForm()
+  const arr = get(values, name) || DEFAULT
 
-  const { values, setValues } = useForm()
-  const arr = DEFAULT
+  const push = () => setValue(name, [...arr, null])
+  const pop = () => setValue(name, arr.slice(0, -1))
 
-  const setValue = arr => {
-    setValues({ [name]: arr }, { keepMeta: true, merge: true })
-  }
-
-  const push = () => setValue([...arr, ''])
-  const pop = () => setValue(arr.slice(0, -1))
-
-  const elements = useMemo(() => arr.map((_, i) => console.log('RENDERING ARRAY COMPS') ||
+  const elements = arr.map((_, i) =>
     <Component
       key={i}
       index={i}
       name={`${name}[${i}]`}
       remove={() => {
-        arr.splice(i, 1)
-        setValue(arr)
+        const a = [...arr]
+        a.splice(i, 1)
+        setValue(name, a)
       }}
     />)
-  , [arr])
-
-  const t1 = window.performance.now()
-  console.log('AF', (t1 - t0).toFixed(2))
 
   return { push, pop, elements }
 }
