@@ -4,9 +4,6 @@ import _useForm from './hooks/useForm'
 import _useField from './hooks/useField'
 import _useArrayField from './hooks/useArrayField'
 
-// TODO visited only after blur
-// TODO clean / dirty
-
 export const Form = _Form
 export const Debug = _Debug
 export const useField = _useField

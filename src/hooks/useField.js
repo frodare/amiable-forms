@@ -8,9 +8,10 @@ const DEFAULT_FORMAT = value => value || ''
 const DEFAULT_FIELD = {}
 
 export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_FORMAT }) => {
-  const { values, fields, setField, setValue, removeField, meta } = useForm()
+  const { values, fields, setField, setValue, removeField, meta, cleanValues } = useForm()
   const field = fields[name] || DEFAULT_FIELD
-  const value = format(get(values, name))
+  const value = get(values, name)
+  const cleanValue = get(cleanValues, name)
 
   useEffect(() => () => removeField(name), [])
 
@@ -21,11 +22,12 @@ export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_
       const valid = !error
       const touched = !!(field.touched || touch)
       const visited = touched || field.visited || false
-      setField(name, { error, valid, touched, visited })
+      const dirty = cleanValue !== value
+      setField(name, { error, valid, touched, visited, dirty })
       setValue(name, value)
     }
 
-    if (field.touched === undefined) {
+    if (!field.registered) {
       _setValue(value)
     }
 
@@ -38,17 +40,19 @@ export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_
       _setValue(event.target.value, { touch: true })
     }
 
+    const formattedValue = format(value)
+
     return {
       ...field,
-      value,
+      value: formattedValue,
       submitted: meta.submitted,
       setValue: _setValue,
       setVisited,
       inputProps: {
-        value,
+        value: formattedValue,
         onChange,
-        onFocus: setVisited
+        onBlur: setVisited
       }
     }
-  }, [field, value])
+  }, [field, value, cleanValue])
 }

@@ -1,7 +1,10 @@
 import * as actions from './actions'
 import set from 'lodash/set'
+import omit from 'lodash/omit'
+import cloneDeep from 'lodash/cloneDeep'
 
 export const initialState = {
+  cleanValues: {},
   values: {},
   fields: {},
   meta: {
@@ -20,6 +23,8 @@ export default ({ transform, validate } = {}) => {
   const updateMeta = state => {
     const meta = { ...state.meta }
     meta.touched = orFlag(state.fields, 'touched')
+    meta.dirty = orFlag(state.fields, 'dirty')
+    meta.visited = meta.visited || orFlag(state.fields, 'visited')
     meta.valid = andFlag(state.fields, 'valid')
     if (validate) meta.valid = meta.valid && validate(state.values)
     return {
@@ -28,17 +33,30 @@ export default ({ transform, validate } = {}) => {
     }
   }
 
+  const runTransform = (state, nextState, action) => {
+    if (!transform || !isValueChanging(action)) return nextState
+    return {
+      ...state,
+      values: transform({ current: state.values, next: nextState.values })
+    }
+  }
+
+  const saveCleanValues = (state, action) => {
+    if (state.meta.visited || !isValueChanging(action)) return state
+    return {
+      ...state,
+      cleanValues: { ...state.values }
+    }
+  }
+
+  const isValueChanging = action => action.type === actions.SET_VALUE || action.type === actions.SET_VALUES
+
   const postProcess = reduceFn => (state, action) => {
     let nextState = reduceFn(state, action)
-
-    if (transform && (action.type === actions.SET_VALUE || action.type === actions.SET_VALUES)) {
-      nextState = {
-        ...nextState,
-        values: transform({ current: state.values, next: nextState.values })
-      }
-    }
-
-    return updateMeta(nextState)
+    nextState = runTransform(state, nextState, action)
+    nextState = updateMeta(nextState)
+    nextState = saveCleanValues(nextState, action)
+    return nextState
   }
 
   const setField = (state, action) => ({
@@ -49,14 +67,16 @@ export default ({ transform, validate } = {}) => {
         error: action.error || '',
         valid: !!action.valid,
         touched: !!action.touched,
-        visited: !!action.visited
+        visited: !!action.visited,
+        dirty: !!action.dirty,
+        registered: true
       }
     }
   })
 
   const setValue = (state, action) => ({
     ...state,
-    values: set({ ...state.values }, action.name, action.value)
+    values: set(cloneDeep(state.values), action.name, action.value)
   })
 
   const setMeta = (state, action) => ({
@@ -81,10 +101,21 @@ export default ({ transform, validate } = {}) => {
     }
   }
 
-  const setValues = (state, action) => ({
-    ...state,
-    values: action.values
-  })
+  const deregister = fields => Object.entries(fields)
+    .map(([name, data]) => [name, { ...data, registered: false }])
+    .reduce((fields, [name, data]) => ({ ...fields, [name]: data }), {})
+
+  const setValues = (state, action) => {
+    const changedValues = action.values || {}
+    const merge = (action.options || {}).merge
+    const keepMeta = (action.options || {}).merge
+
+    return {
+      ...state,
+      values: merge ? { ...state.values, ...changedValues } : changedValues,
+      fields: keepMeta ? deregister(state.fields) : {}
+    }
+  }
 
   const reset = (state, action) => {
     return state

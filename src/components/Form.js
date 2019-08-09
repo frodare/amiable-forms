@@ -19,20 +19,12 @@ const Form = props => {
   const init = useMemo(() => initialValues => initialValues ? reducer(initialState, { type: actions.SET_VALUES, values: initialValues }) : initialState, [reducer])
   const [state, dispatch] = useReducer(reducer, initialValues, init)
 
-  // TODO: clean / dirty system
-  // const cleanValuesContainer = useRef({})
-  // const reset = () => setValues(cleanValuesContainer.current)
-  // if (!visited) {
-  //   cleanValuesContainer.current = { ...values }
-  // }
-  // const dirty = !isEqual(values, cleanValuesContainer.current)
-
   const setField = (name, field) => dispatch({ type: actions.SET_FIELD, name, ...field })
   const setValue = (name, value) => dispatch({ type: actions.SET_VALUE, name, value })
   const setMetaValue = (key, value) => dispatch({ type: actions.SET_META, key, value })
   const removeField = name => dispatch({ type: actions.REMOVE_FIELD, name })
   const reset = () => dispatch({ type: actions.RESET })
-  const setValues = values => dispatch({ type: actions.SET_VALUES, values })
+  const setValues = (values, options) => dispatch({ type: actions.SET_VALUES, values, options })
   const clear = () => setValues({})
 
   const submit = (...args) => {
@@ -40,6 +32,7 @@ const Form = props => {
       if (process) process(state.values, ...args)
     } else {
       if (processInvalid) processInvalid(state.meta, state.fields)
+      setValues(state.values, { keepMeta: true })
     }
     setMetaValue(metaKeys.SUBMITTED, true)
   }
@@ -50,6 +43,7 @@ const Form = props => {
     <formContext.Provider value={{
       fields: state.fields,
       values: state.values,
+      cleanValues: state.cleanValues,
       meta: state.meta,
       setField,
       setValue,
