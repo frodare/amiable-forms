@@ -1,6 +1,5 @@
 import * as actions from './actions'
 import set from 'lodash/set'
-import omit from 'lodash/omit'
 import cloneDeep from 'lodash/cloneDeep'
 
 export const initialState = {
