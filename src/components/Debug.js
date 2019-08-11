@@ -3,12 +3,13 @@ import useForm from '../hooks/useForm'
 import useRender from '../hooks/useRender'
 
 const Debug = () => {
-  const { meta, fields, values, cleanValues, register } = useForm()
-  const render = useRender()
+  const { meta, fields, values, cleanValues, register, deregister } = useForm()
+  // const render = useRender()
 
-  useEffect(() => {
-    register(() => render())
-  }, [register])
+  // useEffect(() => {
+  //   register(render)
+  //   return deregister
+  // }, [register])
 
   return (
     <>

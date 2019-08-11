@@ -1,6 +1,6 @@
 import React from 'react'
 import useForm from './useForm'
-import get from 'lodash/get'
+import get from '../util/get'
 
 const DEFAULT = []
 

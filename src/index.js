@@ -14,8 +14,6 @@ import _useArrayField from './hooks/useArrayField'
 
 // verify form validate is working
 
-// remove lodash
-
 // verify clean / dirty is working
 
 export const Form = _Form

@@ -1,6 +1,7 @@
 import * as actions from './actions'
-import set from 'lodash/set'
-import cloneDeep from 'lodash/cloneDeep'
+import set from '../util/set'
+
+const clone = o => JSON.parse(JSON.stringify(o))
 
 export const initialState = {
   cleanValues: {},
@@ -75,7 +76,7 @@ export default ({ transform, validate } = {}) => {
 
   const setValue = (state, action) => ({
     ...state,
-    values: set(cloneDeep(state.values), action.name, action.value)
+    values: set(clone(state.values), action.name, action.value)
   })
 
   const setMeta = (state, action) => ({

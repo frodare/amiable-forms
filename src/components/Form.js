@@ -20,15 +20,12 @@ const Form = props => {
   const formRef = useRef()
 
   formRef.current = () => ({
-    register,
-    deregister,
-    fields: state.fields,
-    values: state.values,
-    cleanValues: state.cleanValues,
-    meta: state.meta,
+    ...state,
     ...actions,
     submit,
-    onSubmit
+    onSubmit,
+    register,
+    deregister
   })
 
   return (
