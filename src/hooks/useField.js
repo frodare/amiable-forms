@@ -1,19 +1,40 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useCallback } from 'react'
 import useForm from './useForm'
-import get from 'lodash/get'
+import get from '../util/get'
+import useRender from './useRender'
 
 const defaultParse = value => !value && value !== 0 ? undefined : value
 
 const DEFAULT_FORMAT = value => value || ''
 const DEFAULT_FIELD = {}
 
+const valueChanged = ({ name, previous, current }) => {
+  if (previous.fields[name] !== current.fields[name]) return true
+  if (previous.values === current.values) return false
+  const currValue = get(current.values, name)
+  const prevValue = get(previous.values, name)
+  const changed = currValue !== prevValue
+  return changed
+}
+
 export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_FORMAT }) => {
-  const { values, fields, setField, setValue, removeField, meta, cleanValues } = useForm()
+  const render = useRender()
+  const { register, deregister, values, fields, setField, setValue, removeField, meta, cleanValues } = useForm()
+
+  const fieldUpdater = useCallback(({ previous, current }) => {
+    if (valueChanged({ name, previous, current })) {
+      render()
+    }
+  }, [name])
+
   const field = fields[name] || DEFAULT_FIELD
   const value = get(values, name)
   const cleanValue = get(cleanValues, name)
 
-  useEffect(() => () => removeField(name), [])
+  useEffect(() => () => {
+    deregister(fieldUpdater)
+    removeField(name)
+  }, [])
 
   return useMemo(() => {
     const _setValue = (val, { touch = false } = {}) => {
@@ -28,7 +49,9 @@ export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_
     }
 
     if (!field.registered) {
+      register(fieldUpdater)
       _setValue(value)
+      render()
     }
 
     const setVisited = () => {
@@ -36,23 +59,17 @@ export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_
     }
 
     const onChange = event => {
-      event.persist()
       _setValue(event.target.value, { touch: true })
     }
 
-    const formattedValue = format(value)
-
     return {
       ...field,
-      value: formattedValue,
+      value: format(value),
       submitted: meta.submitted,
       setValue: _setValue,
       setVisited,
-      inputProps: {
-        value: formattedValue,
-        onChange,
-        onBlur: setVisited
-      }
+      onChange,
+      onBlur: setVisited
     }
   }, [field, value, cleanValue])
 }

@@ -1,59 +1,38 @@
-import React, { useReducer, useMemo } from 'react'
-import reducerCreator, { initialState } from '../state/reducer'
-import * as actions from '../state/actions'
-import * as metaKeys from '../state/metaKeys'
+import React, { useRef, createContext } from 'react'
+import useFormReducer from '../hooks/useFormReducer'
+import useRegister from '../hooks/useRegister'
+import buildSubmitHandlers from '../util/buildSubmitHandlers'
 
-export const formContext = React.createContext({})
+export const formContext = createContext({})
 
 const Form = props => {
   const {
     children,
-    process,
-    processInvalid,
     validate,
     transform,
     initialValues
   } = props
 
-  const reducer = useMemo(() => reducerCreator({ transform, validate }), [transform, validate])
-  const init = useMemo(() => initialValues => initialValues ? reducer(initialState, { type: actions.SET_VALUES, values: initialValues }) : initialState, [reducer])
-  const [state, dispatch] = useReducer(reducer, initialValues, init)
+  const { actions, state } = useFormReducer({ transform, validate, initialValues })
+  const { submit, onSubmit } = buildSubmitHandlers({ state, actions, props })
+  const { register, deregister } = useRegister(state)
 
-  const setField = (name, field) => dispatch({ type: actions.SET_FIELD, name, ...field })
-  const setValue = (name, value) => dispatch({ type: actions.SET_VALUE, name, value })
-  const setMetaValue = (key, value) => dispatch({ type: actions.SET_META, key, value })
-  const removeField = name => dispatch({ type: actions.REMOVE_FIELD, name })
-  const reset = () => dispatch({ type: actions.RESET })
-  const setValues = (values, options) => dispatch({ type: actions.SET_VALUES, values, options })
-  const clear = () => setValues({})
+  const formRef = useRef()
 
-  const submit = (...args) => {
-    if (state.meta.valid) {
-      if (process) process(state.values, ...args)
-    } else {
-      if (processInvalid) processInvalid(state.meta, state.fields)
-      setValues(state.values, { keepMeta: true })
-    }
-    setMetaValue(metaKeys.SUBMITTED, true)
-  }
-
-  const onSubmit = ev => submit(props, ev)
+  formRef.current = () => ({
+    register,
+    deregister,
+    fields: state.fields,
+    values: state.values,
+    cleanValues: state.cleanValues,
+    meta: state.meta,
+    ...actions,
+    submit,
+    onSubmit
+  })
 
   return (
-    <formContext.Provider value={{
-      fields: state.fields,
-      values: state.values,
-      cleanValues: state.cleanValues,
-      meta: state.meta,
-      setField,
-      setValue,
-      removeField,
-      setValues,
-      reset,
-      clear,
-      submit,
-      onSubmit
-    }}>
+    <formContext.Provider value={formRef}>
       {children}
     </formContext.Provider>
   )

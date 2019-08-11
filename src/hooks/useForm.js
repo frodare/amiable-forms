@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { formContext } from '../components/Form'
 
 export default () => {
-  const form = useContext(formContext)
-  if (!form.fields) throw new Error('must be in a FormProvider')
-  return form
+  const formGetterRef = useContext(formContext)
+  if (!formGetterRef.current) throw new Error('amiable-form hooks must be use inside a <Form>')
+  return formGetterRef.current()
 }
