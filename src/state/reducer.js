@@ -1,7 +1,6 @@
 import * as actions from './actions'
 import set from '../util/set'
-
-const clone = o => JSON.parse(JSON.stringify(o))
+import clone from '../util/clone'
 
 export const initialState = {
   cleanValues: {},
@@ -35,10 +34,7 @@ export default ({ transform, validate } = {}) => {
 
   const runTransform = (state, nextState, action) => {
     if (!transform || !isValueChanging(action)) return nextState
-    return {
-      ...state,
-      values: transform({ current: state.values, next: nextState.values })
-    }
+    return transform({ current: state, next: nextState })
   }
 
   const saveCleanValues = (state, action) => {

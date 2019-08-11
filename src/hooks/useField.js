@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import useForm from './useForm'
 import get from '../util/get'
 
@@ -24,6 +24,7 @@ export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_
   const field = fields[name] || DEFAULT_FIELD
   const value = get(values, name)
   const cleanValue = get(cleanValues, name)
+  const prevValue = useRef()
 
   const _setValue = (val, { touch = false } = {}) => {
     const value = parse(val, name)
@@ -33,7 +34,12 @@ export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_
     const visited = touched || field.visited || false
     const dirty = cleanValue !== value
     setField(name, { error, valid, touched, visited, dirty })
+    prevValue.current = value
     setValue(name, value)
+  }
+
+  if (value !== prevValue.current) {
+    _setValue(value)
   }
 
   if (!field.registered) {

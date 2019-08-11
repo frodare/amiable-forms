@@ -10,8 +10,6 @@ import _useArrayField from './hooks/useArrayField'
 
 // design repeated field hook?
 
-// figure out transformers
-
 // verify form validate is working
 
 // verify clean / dirty is working
