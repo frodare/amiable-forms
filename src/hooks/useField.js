@@ -1,23 +1,14 @@
 import { useEffect, useCallback, useRef } from 'react'
 import useForm from './useForm'
 import get from '../util/get'
+import valueChangedInState from '../util/valueChangedInState'
 
-const defaultParse = value => !value && value !== 0 ? undefined : value
-
-const DEFAULT_FORMAT = value => value || ''
+const DEFAULT_PARSE = v => v
+const DEFAULT_FORMAT = v => v
 const DEFAULT_FIELD = {}
 
-const valueChanged = name => ({ previous, current }) => {
-  if (previous.fields[name] !== current.fields[name]) return true
-  if (previous.values === current.values) return false
-  const currValue = get(current.values, name)
-  const prevValue = get(previous.values, name)
-  const changed = currValue !== prevValue
-  return changed
-}
-
-export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_FORMAT }) => {
-  const shouldUpdate = useCallback(valueChanged(name), [name])
+export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT }) => {
+  const shouldUpdate = useCallback(valueChangedInState(name), [name])
   const { values, fields, setField, setValue, removeField, meta, cleanValues } = useForm({ shouldUpdate })
   useEffect(() => () => removeField(name), [name])
 
@@ -35,10 +26,12 @@ export default ({ name, validators = [], parse = defaultParse, format = DEFAULT_
     const dirty = cleanValue !== value
     setField(name, { error, valid, touched, visited, dirty })
     prevValue.current = value
+    console.log('set value', value)
     setValue(name, value)
   }
 
   if (value !== prevValue.current) {
+    console.log('value mismatch', value, prevValue.current)
     _setValue(value)
   }
 
