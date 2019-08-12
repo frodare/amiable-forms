@@ -9,6 +9,12 @@ const lengthChanged = name => ({ previous, current }) => {
   return currValue !== prevValue
 }
 
+const removeIndex = i => arr => {
+  const a = [...arr]
+  a.splice(i, 1)
+  return a
+}
+
 export default ({ name, Component, props }) => {
   const shouldUpdate = useCallback(lengthChanged(name), [name])
   const { values, setValue } = useForm({ shouldUpdate })
@@ -24,9 +30,7 @@ export default ({ name, Component, props }) => {
       index={i}
       name={`${name}[${i}]`}
       remove={() => {
-        const a = [...arr]
-        a.splice(i, 1)
-        setValue(name, a)
+        setValue(name, removeIndex(i))
       }}
     />)
 
