@@ -6,8 +6,6 @@ import _useArrayField from './hooks/useArrayField'
 
 // design repeated field hook?
 
-// verify form validate is working
-
 // verify clean / dirty is working
 
 export const Form = _Form
