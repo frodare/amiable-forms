@@ -3,9 +3,11 @@ import useForm from './useForm'
 import get from '../util/get'
 import valueChangedInState from '../util/valueChangedInState'
 
-const DEFAULT_PARSE = v => v
+const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
 const DEFAULT_FIELD = {}
+
+const normalizeEmpty = v => v || v === 0 ? v : undefined
 
 export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT }) => {
   const shouldUpdate = useCallback(valueChangedInState(name), [name])
@@ -13,8 +15,8 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
   useEffect(() => () => removeField(name), [name])
 
   const field = fields[name] || DEFAULT_FIELD
-  const value = get(values, name)
-  const cleanValue = get(cleanValues, name)
+  const value = normalizeEmpty(get(values, name, undefined))
+  const cleanValue = normalizeEmpty(get(cleanValues, name, undefined))
   const prevValue = useRef()
 
   const _setValue = (val, { touch = false } = {}) => {
@@ -30,6 +32,7 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
   }
 
   if (value !== prevValue.current) {
+    prevValue.current = value
     _setValue(value)
   }
 
