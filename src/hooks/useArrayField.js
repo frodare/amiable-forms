@@ -5,8 +5,15 @@ import valueChangedInState from '../util/valueChangedInState'
 
 const DEFAULT = []
 
+const lengthChanged = name => ({ previous, current }) => {
+  if (previous.values === current.values) return false
+  const currValue = (get(current.values, name) || []).length
+  const prevValue = (get(previous.values, name) || []).length
+  return currValue !== prevValue
+}
+
 export default ({ name, Component, props }) => {
-  const shouldUpdate = useCallback(valueChangedInState(name), [name])
+  const shouldUpdate = useCallback(lengthChanged(name), [name])
   const { values, setValue } = useForm({ shouldUpdate })
   const arr = get(values, name) || DEFAULT
 
