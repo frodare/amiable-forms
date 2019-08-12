@@ -6,7 +6,7 @@ import _useArrayField from './hooks/useArrayField'
 
 // design repeated field hook?
 
-// verify clean / dirty is working
+// build useFieldValue
 
 export const Form = _Form
 export const Debug = _Debug
