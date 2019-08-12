@@ -5,18 +5,14 @@ export default current => {
   const registrationsRef = useRef([])
   const previous = previousRef.current
 
-  console.log('subs: ', registrationsRef.current.length)
-
   const register = useCallback(cb => {
     registrationsRef.current.push(cb)
-    console.log('register')
   }, [])
 
   const deregister = useCallback(cb => {
     const i = registrationsRef.current.indexOf(cb)
     if (i >= 0) {
       registrationsRef.current.splice(i, 1)
-      console.log('deregister')
     }
   }, [])
 

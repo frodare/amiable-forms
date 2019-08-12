@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react'
 import useForm from './useForm'
 import get from '../util/get'
-import valueChangedInState from '../util/valueChangedInState'
 
 const DEFAULT = []
 

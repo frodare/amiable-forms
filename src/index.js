@@ -4,10 +4,6 @@ import _useForm from './hooks/useForm'
 import _useField from './hooks/useField'
 import _useArrayField from './hooks/useArrayField'
 
-// TODO move registered flag to a ref, check flag in callback
-
-// update array field
-
 // design repeated field hook?
 
 // verify form validate is working

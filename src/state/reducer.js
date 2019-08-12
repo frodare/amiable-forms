@@ -15,20 +15,41 @@ export const initialState = {
   }
 }
 
+const metaIsDifferent = (a, b) => {
+  if (a.submitted !== b.submitted) return true
+  if (a.touched !== b.touched) return true
+  if (a.dirty !== b.dirty) return true
+  if (a.visited !== b.visited) return true
+  if (a.valid !== b.valid) return true
+  return false
+}
+
 export default ({ transform, validate } = {}) => {
   const orFlag = (fields, key) => Object.values(fields).reduce((flag, field) => flag || field[key] || false, false)
   const andFlag = (fields, key) => Object.values(fields).reduce((flag, field) => flag && field[key], true)
 
   const updateMeta = state => {
-    const meta = { ...state.meta }
-    meta.touched = orFlag(state.fields, 'touched')
-    meta.dirty = orFlag(state.fields, 'dirty')
-    meta.visited = meta.visited || orFlag(state.fields, 'visited')
-    meta.valid = andFlag(state.fields, 'valid')
-    if (validate) meta.valid = meta.valid && validate(state.values)
-    return {
-      ...state,
-      meta
+    const meta = state.meta
+    const touched = orFlag(state.fields, 'touched')
+    const dirty = orFlag(state.fields, 'dirty')
+    const visited = meta.visited || orFlag(state.fields, 'visited')
+    const validFields = andFlag(state.fields, 'valid')
+    const validForm = validate ? validFields && validate(state.values) : true
+    const valid = validFields && validForm
+
+    if (metaIsDifferent(meta, state.meta)) {
+      return {
+        ...state,
+        meta: {
+          submitted: meta.submitted,
+          touched,
+          dirty,
+          visited,
+          valid
+        }
+      }
+    } else {
+      return state
     }
   }
 

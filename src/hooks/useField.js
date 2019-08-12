@@ -4,7 +4,7 @@ import get from '../util/get'
 import valueChangedInState from '../util/valueChangedInState'
 
 const DEFAULT_PARSE = v => v
-const DEFAULT_FORMAT = v => v
+const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
 const DEFAULT_FIELD = {}
 
 export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT }) => {
@@ -26,12 +26,10 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
     const dirty = cleanValue !== value
     setField(name, { error, valid, touched, visited, dirty })
     prevValue.current = value
-    console.log('set value', value)
     setValue(name, value)
   }
 
   if (value !== prevValue.current) {
-    console.log('value mismatch', value, prevValue.current)
     _setValue(value)
   }
 
