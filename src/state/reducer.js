@@ -21,6 +21,7 @@ const metaIsDifferent = (a, b) => {
   if (a.dirty !== b.dirty) return true
   if (a.visited !== b.visited) return true
   if (a.valid !== b.valid) return true
+  if (a.error !== b.error) return true
   return false
 }
 
@@ -34,20 +35,19 @@ export default ({ transform, validate } = {}) => {
     const dirty = orFlag(state.fields, 'dirty')
     const visited = meta.visited || orFlag(state.fields, 'visited')
     const validFields = andFlag(state.fields, 'valid')
-    const validForm = validate ? validFields && validate(state.values) : true
-    const valid = validFields && validForm
+    const error = validate && validFields ? validate(state.values) : undefined
 
-    if (metaIsDifferent(meta, state.meta)) {
-      return {
-        ...state,
-        meta: {
-          submitted: meta.submitted,
-          touched,
-          dirty,
-          visited,
-          valid
-        }
-      }
+    const newMeta = {
+      submitted: meta.submitted,
+      touched,
+      dirty,
+      visited,
+      valid: validFields && !error,
+      error
+    }
+
+    if (metaIsDifferent(meta, newMeta)) {
+      return { ...state, meta: newMeta }
     } else {
       return state
     }
