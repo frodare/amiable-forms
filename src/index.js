@@ -3,8 +3,7 @@ import _Debug from './components/Debug'
 import _useForm from './hooks/useForm'
 import _useField from './hooks/useField'
 import _useArrayField from './hooks/useArrayField'
-
-// design repeated field hook?
+import _useRepeatedField from './hooks/useRepeatedField'
 
 // build useFieldValue
 
@@ -13,3 +12,4 @@ export const Debug = _Debug
 export const useField = _useField
 export const useForm = _useForm
 export const useArrayField = _useArrayField
+export const useRepeatedField = _useRepeatedField

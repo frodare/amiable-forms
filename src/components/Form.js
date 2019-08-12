@@ -27,10 +27,17 @@ const Form = props => {
     actions.setValue(name, updatedValue)
   }
 
+  const setValuesWithFunctionalUpdate = values => {
+    const currentValues = formRef.current().values
+    const updatedValues = isFunction(values) ? values(currentValues) : values
+    actions.setValues(updatedValues)
+  }
+
   formRef.current = () => ({
     ...state,
     ...actions,
     setValue: setValueWithFunctionalUpdate,
+    setValues: setValuesWithFunctionalUpdate,
     submit,
     onSubmit,
     register,

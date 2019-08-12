@@ -20,19 +20,19 @@ export default ({ name, Component, props }) => {
   const { values, setValue } = useForm({ shouldUpdate })
   const arr = get(values, name, [])
 
-  const push = () => setValue(name, [...arr, null])
-  const pop = () => setValue(name, arr.slice(0, -1))
+  const add = () => setValue(name, [...arr, null])
+  const remove = () => setValue(name, arr.slice(0, -1))
 
   const elements = arr.map((_, i) =>
     <Component
       {...props}
       key={i}
       index={i}
-      name={`${name}[${i}]`}
+      prefix={`${name}[${i}]`}
       remove={() => {
         setValue(name, removeIndex(i))
       }}
     />)
 
-  return { push, pop, elements }
+  return { add, remove, elements }
 }
