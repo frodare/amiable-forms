@@ -29,10 +29,10 @@ const removeIndexCreator = (setValues, prefix, delimiter) => i => {
   )
 }
 
-export default ({ prefix, delimiter = '_', Component, props }) => {
+export default ({ prefix, Component, props, delimiter = '_', initialCount = 0 }) => {
   const { setValues } = useForm({ shouldUpdate: () => false })
   const removeIndex = useCallback(removeIndexCreator(setValues, prefix, delimiter), [prefix, setValues])
-  const [count, setCount] = useState(2)
+  const [count, setCount] = useState(initialCount)
 
   const add = () => setCount(count + 1)
   const remove = () => setCount(count - 1)
