@@ -1,37 +1,50 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import useForm from './useForm'
 
 const toObject = (o, [name, value]) => ({ ...o, [name]: value })
 
-const removeIndexCreator = (setValues, prefix, delimiter) => i => {
-  const notIndex = ([name]) => !name.startsWith(`${prefix}${delimiter}${i}${delimiter}`)
+const DEFAULT_DELIMETER = '_'
+const DEFAULT_COUNT = 0
+const DEFAULT_INDEX_FORMAT = i => i
+const DEFAULT_INDEX_PARSE = i => i
 
-  const shiftName = name => {
-    const [sPrefix, sIndex, ...aSuffix] = name.split(delimiter)
+export default ({
+  prefix,
+  Component,
+  props,
+  delimiter = DEFAULT_DELIMETER,
+  initialCount = DEFAULT_COUNT,
+  formatIndex = DEFAULT_INDEX_FORMAT,
+  parseIndex = DEFAULT_INDEX_PARSE
+}) => {
+  const { setValues } = useForm({ shouldUpdate: () => false })
 
-    if (!sPrefix || !sIndex || !aSuffix || !aSuffix.length) return name
-    if (sPrefix !== prefix) return name
+  const removeIndex = i => {
+    const notIndex = ([name]) => !name.startsWith(`${prefix}${delimiter}${formatIndex(i)}${delimiter}`)
 
-    const index = +sIndex
-    const suffix = aSuffix.join(delimiter)
+    const shiftName = name => {
+      const [sPrefix, sIndex, ...aSuffix] = name.split(delimiter)
 
-    if (index < i) return name
+      if (!sPrefix || !sIndex || !aSuffix || !aSuffix.length) return name
+      if (sPrefix !== prefix) return name
 
-    return `${prefix}${delimiter}${(index - 1)}${delimiter}${suffix}`
+      const index = +parseIndex(sIndex)
+      const suffix = aSuffix.join(delimiter)
+
+      if (index < i) return name
+
+      return `${prefix}${delimiter}${formatIndex(index - 1)}${delimiter}${suffix}`
+    }
+
+    const shiftKeyOver = ([name, value]) => [shiftName(name), value]
+
+    setValues(values => Object.entries(values)
+      .filter(notIndex)
+      .map(shiftKeyOver)
+      .reduce(toObject, {})
+    )
   }
 
-  const shiftKeyOver = ([name, value]) => [shiftName(name), value]
-
-  setValues(values => Object.entries(values)
-    .filter(notIndex)
-    .map(shiftKeyOver)
-    .reduce(toObject, {})
-  )
-}
-
-export default ({ prefix, Component, props, delimiter = '_', initialCount = 0 }) => {
-  const { setValues } = useForm({ shouldUpdate: () => false })
-  const removeIndex = useCallback(removeIndexCreator(setValues, prefix, delimiter), [prefix, setValues])
   const [count, setCount] = useState(initialCount)
 
   const add = () => setCount(count + 1)
@@ -42,7 +55,7 @@ export default ({ prefix, Component, props, delimiter = '_', initialCount = 0 })
       {...props}
       key={i}
       index={i}
-      prefix={`${prefix}${delimiter}${i}${delimiter}`}
+      prefix={`${prefix}${delimiter}${formatIndex(i)}${delimiter}`}
       remove={() => {
         removeIndex(i)
         remove()
