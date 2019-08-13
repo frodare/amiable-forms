@@ -6,7 +6,7 @@ export default ({ state, actions, props }) => {
     if (state.meta.valid) {
       if (process) process(state.values, ...args)
     } else {
-      if (processInvalid) processInvalid(state.meta, state.fields)
+      if (processInvalid) processInvalid(state.values, state.meta, state.fields)
       actions.setValues(state.values, { keepMeta: true })
     }
     actions.setMetaValue(metaKeys.SUBMITTED, true)
