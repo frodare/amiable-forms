@@ -15,8 +15,8 @@ const Form = props => {
     initialValues
   } = props
 
-  const { actions, state } = useFormReducer({ transform, validate, initialValues })
-  const { submit, onSubmit } = buildSubmitHandlers({ state, actions, props })
+  const { actions, state, stateRef } = useFormReducer({ transform, validate, initialValues })
+  const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
   const { register, deregister } = useRegister(state)
 
   const formRef = useRef()

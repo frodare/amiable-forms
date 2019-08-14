@@ -1,4 +1,4 @@
-import { useReducer, useMemo } from 'react'
+import { useReducer, useMemo, useRef } from 'react'
 import reducerCreator, { initialState } from '../state/reducer'
 import * as actionTypes from '../state/actions'
 
@@ -6,6 +6,8 @@ export default ({ transform, validate, initialValues }) => {
   const reducer = useMemo(() => reducerCreator({ transform, validate }), [transform, validate])
   const init = useMemo(() => initialValues => initialValues ? reducer(initialState, { type: actionTypes.SET_VALUES, values: initialValues }) : initialState, [reducer])
   const [state, dispatch] = useReducer(reducer, initialValues, init)
+  const stateRef = useRef()
+  stateRef.current = state
 
   const actions = useMemo(() => {
     const setField = (name, field) =>
@@ -32,5 +34,5 @@ export default ({ transform, validate, initialValues }) => {
     return { setField, setValue, setMetaValue, removeField, reset, setValues, clear }
   }, [dispatch])
 
-  return { actions, state }
+  return { actions, state, stateRef }
 }

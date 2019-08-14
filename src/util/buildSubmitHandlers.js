@@ -1,8 +1,9 @@
 import * as metaKeys from '../state/metaKeys'
 
-export default ({ state, actions, props }) => {
+export default ({ stateRef, actions, props }) => {
   const { process, processInvalid } = props
   const submit = (...args) => {
+    const state = stateRef.current
     if (state.meta.valid) {
       if (process) process(state.values, ...args)
     } else {
