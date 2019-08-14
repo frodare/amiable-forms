@@ -22,7 +22,6 @@ npm install --save amiable-forms
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Form, useField, useForm } from 'amiable-forms'
-import './styles.scss'
 
 const Input = props => {
   const { value, onChange } = useField({ name: props.name })
@@ -194,4 +193,10 @@ const { setValues } = useForm({ shouldUpdate: never })
 ## useRepeated
 
 ## Debug
+
+# Solutions to Common Problems
+
+- conditional sections based on form state
+- setting form state (or submitting) from external source
+
 
