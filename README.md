@@ -18,18 +18,20 @@ npm install --save amiable-forms
 
 # Getting Started
 
-```jsx
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { Form, useField, useForm } from 'amiable-forms'
+First wrap the form components with the `<Form>` component provided by `amiable-forms`. This will not add any visual components or inject any props. Its purpose is only to provide a context for the hooks to use.
 
+Fields components can be defined with the `useField` hook. This can be done many different ways, a very simplistic version is shown in the example below.
+
+The last hook that will most likely be required is the `useSubmit` hook which provides an `onSubmit` method.
+
+```jsx
 const Input = props => {
   const { value, onChange } = useField({ name: props.name })
   return <input {...props} value={value} onChange={onChange} />
 }
 
 const SubmitButton = () => {
-  const { onSubmit } = useForm()
+  const { onSubmit } = useSubmit()
   return <button onClick={onSubmit}>Login</button>
 }
 
@@ -42,11 +44,9 @@ const LoginForm = () => (
     <SubmitButton />
   </Form>
 )
-
-const rootElement = document.getElementById('root')
-ReactDOM.render(<LoginForm />, rootElement)
 ```
-
+To see a more complete example of a form built with `amiable-forms` use this codesandbox link: 
+[Simple Example Form](https://codesandbox.io/s/simple-amiable-forms-example-7qckb)
 
 # Documentation
 
@@ -133,7 +133,7 @@ const format = value => (value || '').toLowerCase()
 
 ## useForm
 
-The `useForm` hook is the base `amiable-forms` hook and provides access to the entire state of the form. By default it will cause the component it is in to render on every change. To avoid unnessary renders, the `shouldUpdate` function needs to be passed into it has an argument.
+The `useForm` hook is the base `amiable-forms` hook and provides access to the entire state of the form. All of the other hooks are built using `useForm`. By default `useForm` will cause the component it is in to render on every change. To avoid unnessary renders, the `shouldUpdate` function needs to be passed into it as an argument.
 
 ```jsx
 const never = () => false
@@ -198,5 +198,5 @@ const { setValues } = useForm({ shouldUpdate: never })
 
 - conditional sections based on form state
 - setting form state (or submitting) from external source
-
-
+- sending additional arguments to the process function
+- complex fields
