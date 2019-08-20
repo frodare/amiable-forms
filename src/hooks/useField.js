@@ -54,6 +54,7 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
     submitted: meta.submitted,
     setValue: _setValue,
     setVisited,
+    cleanValue,
     onChange,
     onBlur: setVisited
   }
