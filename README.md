@@ -200,3 +200,4 @@ const { setValues } = useForm({ shouldUpdate: never })
 - setting form state (or submitting) from external source
 - sending additional arguments to the process function
 - complex fields
+- destructive parse (parseWhenFocused)
