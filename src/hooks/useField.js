@@ -9,7 +9,7 @@ const DEFAULT_FIELD = {}
 
 const normalizeEmpty = v => v || v === 0 ? v : undefined
 
-export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT }) => {
+export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true }) => {
   const shouldUpdate = useCallback(valueChangedInState(name), [name])
   const { values, fields, setField, setValue, removeField, meta, cleanValues } = useForm({ shouldUpdate })
   useEffect(() => () => removeField(name), [name])
@@ -18,15 +18,17 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
   const value = normalizeEmpty(get(values, name, undefined))
   const cleanValue = normalizeEmpty(get(cleanValues, name, undefined))
   const prevValue = useRef()
+  const bypassParseDueToFocus = field.focused && parseWhenFocused === false
 
   const _setValue = (val, { touch = false } = {}) => {
-    const value = parse(val, name)
+    const value = bypassParseDueToFocus ? val : parse(val, name)
     const error = validators.reduce((error, validator) => error || validator(value), '')
     const valid = !error
     const touched = !!(field.touched || touch)
     const visited = touched || field.visited || false
     const dirty = cleanValue !== value
-    setField(name, { error, valid, touched, visited, dirty })
+    const focused = field.focused
+    setField(name, { error, valid, touched, visited, dirty, focused })
     prevValue.current = value
     setValue(name, value)
   }
@@ -40,6 +42,10 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
     _setValue(value)
   }
 
+  const setFocused = focused => {
+    setField(name, { ...field, focused: true })
+  }
+
   const setVisited = () => {
     setField(name, { ...field, visited: true })
   }
@@ -48,14 +54,23 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
     _setValue(event.target.value, { touch: true })
   }
 
+  const onBlur = () => {
+    if (bypassParseDueToFocus) setValue(name, parse(value))
+    setField(name, { ...field, visited: true, focused: false })
+  }
+
+  const onFocus = () => setFocused(true)
+
   return {
     ...field,
     value: format(value),
     submitted: meta.submitted,
     setValue: _setValue,
     setVisited,
+    setFocused,
     cleanValue,
     onChange,
-    onBlur: setVisited
+    onBlur,
+    onFocus
   }
 }

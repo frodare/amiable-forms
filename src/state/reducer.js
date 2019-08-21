@@ -86,6 +86,7 @@ export default ({ transform, validate } = {}) => {
         touched: !!action.touched,
         visited: !!action.visited,
         dirty: !!action.dirty,
+        focused: !!action.focused,
         registered: true
       }
     }
