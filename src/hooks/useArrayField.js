@@ -5,7 +5,10 @@ import deepEqual from '../util/deepEqual'
 
 const valueChanged = name => ({ previous, current }) => {
   if (previous.values === current.values) return false
-  return !deepEqual(previous.values[name], current.values[name])
+  const currValue = get(current.values, name)
+  const prevValue = get(previous.values, name)
+
+  return !deepEqual(prevValue, currValue)
 }
 
 const removeIndex = i => arr => {
