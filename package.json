@@ -43,5 +43,6 @@
     "babel-jest": "^24.8.0",
     "standard": "^13.1.0",
     "standard-react": "^4.0.0"
-  }
+  },
+  "dependencies": {}
 }

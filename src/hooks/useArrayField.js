@@ -1,12 +1,14 @@
 import React, { useCallback } from 'react'
 import useForm from './useForm'
 import get from '../util/get'
+import deepEqual from '../util/deepEqual'
 
-const lengthChanged = name => ({ previous, current }) => {
+const valueChanged = name => ({ previous, current }) => {
   if (previous.values === current.values) return false
-  const currValue = (get(current.values, name) || []).length
-  const prevValue = (get(previous.values, name) || []).length
-  return currValue !== prevValue
+  const currValue = get(current.values, name)
+  const prevValue = get(previous.values, name)
+
+  return !deepEqual(prevValue, currValue)
 }
 
 const removeIndex = i => arr => {
@@ -16,7 +18,7 @@ const removeIndex = i => arr => {
 }
 
 export default ({ name, Component, props }) => {
-  const shouldUpdate = useCallback(lengthChanged(name), [name])
+  const shouldUpdate = useCallback(valueChanged(name), [name])
   const { values, setValue } = useForm({ shouldUpdate })
   const arr = get(values, name, [])
 
