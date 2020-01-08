@@ -22,6 +22,7 @@ const metaIsDifferent = (a, b) => {
   if (a.visited !== b.visited) return true
   if (a.valid !== b.valid) return true
   if (a.error !== b.error) return true
+  if (a.custom !== b.custom) return true
   return false
 }
 
@@ -87,7 +88,8 @@ export default ({ transform, validate } = {}) => {
         visited: !!action.visited,
         dirty: !!action.dirty,
         focused: !!action.focused,
-        registered: true
+        registered: true,
+        custom: action.custom
       }
     }
   })

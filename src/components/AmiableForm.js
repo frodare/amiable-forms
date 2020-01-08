@@ -7,7 +7,7 @@ import get from '../util/get'
 
 export const formContext = createContext({})
 
-const Form = props => {
+const AmiableForm = props => {
   const {
     children,
     validate,
@@ -51,4 +51,4 @@ const Form = props => {
   )
 }
 
-export default Form
+export default AmiableForm

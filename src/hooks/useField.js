@@ -9,7 +9,7 @@ const DEFAULT_FIELD = {}
 
 const normalizeEmpty = v => v || v === 0 ? v : undefined
 
-export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true }) => {
+export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true, custom }) => {
   const shouldUpdate = useCallback(valueChangedInState(name), [name])
   const { values, fields, setField, setValue, removeField, meta, cleanValues } = useForm({ shouldUpdate })
   useEffect(() => () => removeField(name), [name])
@@ -28,7 +28,7 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
     const visited = touched || field.visited || false
     const dirty = cleanValue !== value
     const focused = field.focused
-    setField(name, { error, valid, touched, visited, dirty, focused })
+    setField(name, { error, valid, touched, visited, dirty, focused, custom })
     prevValue.current = value
     setValue(name, value)
   }
