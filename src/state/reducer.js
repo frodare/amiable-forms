@@ -108,15 +108,10 @@ export default ({ transform, validate } = {}) => {
   })
 
   const removeField = (state, action) => {
-    const values = { ...state.values }
     const fields = { ...state.fields }
-
-    delete values[action.name]
     delete fields[action.name]
-
     return {
       ...state,
-      values,
       fields
     }
   }
