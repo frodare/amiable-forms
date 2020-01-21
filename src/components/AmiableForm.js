@@ -27,10 +27,10 @@ const AmiableForm = props => {
     actions.setValue(name, updatedValue)
   }
 
-  const setValuesWithFunctionalUpdate = values => {
+  const setValuesWithFunctionalUpdate = (values, options) => {
     const currentValues = formRef.current().values
     const updatedValues = isFunction(values) ? values(currentValues) : values
-    actions.setValues(updatedValues)
+    actions.setValues(updatedValues, options)
   }
 
   formRef.current = () => ({
