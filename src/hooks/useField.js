@@ -27,6 +27,9 @@ const useRelatedValueChanged = ({ relatedFields, values }) => {
   return changed
 }
 
+const validate = ({ value, values, validators }) =>
+  validators.reduce((error, validator) => error || validator(value, values), '') || ''
+
 const createShouldUpdateWork = ({ name, validators, errorChangedRef }) => ({ previous, current }) => {
   console.log('run', name)
 
