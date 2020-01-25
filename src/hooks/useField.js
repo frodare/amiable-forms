@@ -9,7 +9,7 @@ const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
 const DEFAULT_FIELD = {}
 
-const createShouldUpdateWork = ({ name, validators, requestUpdateValueRef }) => {
+const createShouldUpdate = ({ name, validators, requestUpdateValueRef }) => {
   const errorCheck = errorWillChangeInState({ name, validators, requestUpdateValueRef })
   const valueCheck = valueChangedInState(name)
   return state => errorCheck(state) || valueCheck(state)
@@ -17,7 +17,7 @@ const createShouldUpdateWork = ({ name, validators, requestUpdateValueRef }) => 
 
 export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true, custom }) => {
   const requestUpdateValueRef = useRef()
-  const shouldUpdate = useCallback(createShouldUpdateWork({ name, validators, requestUpdateValueRef }), [name, validators, requestUpdateValueRef])
+  const shouldUpdate = useCallback(createShouldUpdate({ name, validators, requestUpdateValueRef }), [name, validators, requestUpdateValueRef])
 
   const { values, fields, setField, setValue, removeField, meta, cleanValues } = useForm({ shouldUpdate })
   useEffect(() => () => removeField(name), [name])
