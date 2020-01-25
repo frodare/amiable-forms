@@ -44,13 +44,11 @@ const AmiableForm = props => {
     deregister
   })
 
-  const r = (
+  return (
     <formContext.Provider value={formRef}>
       {children}
     </formContext.Provider>
   )
-
-  return r
 }
 
 export default AmiableForm
