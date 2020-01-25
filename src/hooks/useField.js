@@ -4,6 +4,7 @@ import get from '../util/get'
 import valueChangedInState from '../util/valueChangedInState'
 import errorWillChangeInState from '../util/errorWillChangeInState'
 import normalizeEmpty from '../util/normalizeEmpty'
+import validate from '../util/validate'
 
 const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
@@ -31,7 +32,7 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
   const _setValue = (val, { touch = false } = {}) => {
     requestUpdateValueRef.current = undefined
     const value = bypassParseDueToFocus ? val : parse(val, name)
-    const error = validators.reduce((error, validator) => error || validator(value, values), '')
+    const error = validate({ value, values, validators })
     const valid = !error
     const touched = !!(field.touched || touch)
     const visited = touched || field.visited || false
