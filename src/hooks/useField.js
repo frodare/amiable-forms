@@ -2,15 +2,24 @@ import { useEffect, useCallback, useRef } from 'react'
 import useForm from './useForm'
 import get from '../util/get'
 import valueChangedInState from '../util/valueChangedInState'
+import errorWillChangeInState from '../util/errorWillChangeInState'
+import normalizeEmpty from '../util/normalizeEmpty'
+import validate from '../util/validate'
 
 const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
 const DEFAULT_FIELD = {}
 
-const normalizeEmpty = v => v || v === 0 ? v : undefined
+const createShouldUpdate = ({ name, validators, requestUpdateValueRef }) => {
+  const errorCheck = errorWillChangeInState({ name, validators, requestUpdateValueRef })
+  const valueCheck = valueChangedInState(name)
+  return state => errorCheck(state) || valueCheck(state)
+}
 
 export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true, custom }) => {
-  const shouldUpdate = useCallback(valueChangedInState(name), [name])
+  const requestUpdateValueRef = useRef()
+  const shouldUpdate = useCallback(createShouldUpdate({ name, validators, requestUpdateValueRef }), [name, validators, requestUpdateValueRef])
+
   const { values, fields, setField, setValue, removeField, meta, cleanValues } = useForm({ shouldUpdate })
   useEffect(() => () => removeField(name), [name])
 
@@ -21,8 +30,9 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
   const bypassParseDueToFocus = field.focused && parseWhenFocused === false
 
   const _setValue = (val, { touch = false } = {}) => {
+    requestUpdateValueRef.current = undefined
     const value = bypassParseDueToFocus ? val : parse(val, name)
-    const error = validators.reduce((error, validator) => error || validator(value), '')
+    const error = validate({ value, values, validators })
     const valid = !error
     const touched = !!(field.touched || touch)
     const visited = touched || field.visited || false
@@ -33,12 +43,7 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
     setValue(name, value)
   }
 
-  if (value !== prevValue.current) {
-    prevValue.current = value
-    _setValue(value)
-  }
-
-  if (!field.registered) {
+  if (value !== prevValue.current || requestUpdateValueRef.current || !field.registered) {
     _setValue(value)
   }
 
