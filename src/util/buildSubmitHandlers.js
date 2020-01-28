@@ -1,15 +1,13 @@
 import * as metaKeys from '../state/metaKeys'
 import get from '../util/get'
+import set from '../util/set'
 
 const NOOP = () => {}
 
 const reduceFieldValue = allValues => (fieldValues, fieldName) => {
   const value = get(allValues, fieldName)
   if (!value) return fieldValues
-  return {
-    ...fieldValues,
-    [fieldName]: value
-  }
+  return set(fieldValues, fieldName, value)
 }
 
 const getFieldValues = (allValues, fields) => Object.keys(fields).reduce(reduceFieldValue(allValues), {})
