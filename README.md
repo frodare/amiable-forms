@@ -10,7 +10,7 @@ A library for creating forms in React using hooks. This project requires no depe
 
 # Installation
 
-React Redux requires **React 16.8.3 or later.**
+amiable-forms requires **React 16.8.3 or later.**
 
 ```
 npm install --save amiable-forms
