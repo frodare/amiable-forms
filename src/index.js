@@ -7,6 +7,7 @@ import _useSubmit from './hooks/useSubmit'
 import _useArrayField from './hooks/useArrayField'
 import _useRepeatedField from './hooks/useRepeatedField'
 import _useFieldCustomMeta from './hooks/useFieldCustomMeta'
+import _ValueUpdator from './components/ValueUpdator'
 
 export const AmiableForm = _AmiableForm
 export const Debug = _Debug
@@ -17,3 +18,4 @@ export const useForm = _useForm
 export const useArrayField = _useArrayField
 export const useRepeatedField = _useRepeatedField
 export const useFieldCustomMeta = _useFieldCustomMeta
+export const ValueUpdator = _ValueUpdator

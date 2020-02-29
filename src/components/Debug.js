@@ -1,16 +1,8 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import useForm from '../hooks/useForm'
-import useRender from '../hooks/useRender'
 
 const Debug = () => {
-  const { meta, fields, values, cleanValues, register, deregister } = useForm()
-  // const render = useRender()
-
-  // useEffect(() => {
-  //   register(render)
-  //   return deregister
-  // }, [register])
-
+  const { meta, fields, values, cleanValues } = useForm()
   return (
     <>
       <h5>Values</h5>

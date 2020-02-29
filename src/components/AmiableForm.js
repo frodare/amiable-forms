@@ -1,4 +1,4 @@
-import React, { useRef, createContext } from 'react'
+import React, { useRef, createContext, useCallback } from 'react'
 import useFormReducer from '../hooks/useFormReducer'
 import useRegister from '../hooks/useRegister'
 import buildSubmitHandlers from '../util/buildSubmitHandlers'
@@ -21,17 +21,17 @@ const AmiableForm = props => {
 
   const formRef = useRef()
 
-  const setValueWithFunctionalUpdate = (name, value) => {
+  const setValueWithFunctionalUpdate = useCallback((name, value) => {
     const currentValues = formRef.current().values
     const updatedValue = isFunction(value) ? value(get(currentValues, name)) : value
     actions.setValue(name, updatedValue)
-  }
+  }, [formRef, actions])
 
-  const setValuesWithFunctionalUpdate = (values, options) => {
+  const setValuesWithFunctionalUpdate = useCallback((values, options) => {
     const currentValues = formRef.current().values
     const updatedValues = isFunction(values) ? values(currentValues) : values
     actions.setValues(updatedValues, options)
-  }
+  }, [formRef, actions])
 
   formRef.current = () => ({
     ...state,
