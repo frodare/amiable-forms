@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import * as metaKeys from '../state/metaKeys'
 import get from '../util/get'
 import set from '../util/set'
@@ -15,14 +16,17 @@ const getFieldValues = (allValues, fields) => Object.keys(fields).reduce(reduceF
 export default ({ stateRef, actions, props }) => {
   const { process, processInvalid } = props
 
-  const submit = (...args) => {
+  const submit = useCallback((...args) => {
     const state = stateRef.current
     const processFn = (state.meta.valid ? process : processInvalid) || NOOP
     const fieldValues = getFieldValues(state.values, state.fields)
     processFn(fieldValues, { ...state }, ...args)
     actions.setMetaValue(metaKeys.SUBMITTED, true)
-  }
+  }, [stateRef, actions, process, processInvalid])
 
-  const onSubmit = ev => submit(props, ev)
+  const onSubmit = useCallback(ev => {
+    submit(props, ev)
+  }, [submit])
+
   return { submit, onSubmit }
 }
