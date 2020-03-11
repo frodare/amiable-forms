@@ -1,7 +1,7 @@
 amiable-forms
 =========
 
-A library for creating forms in React using hooks. This project requires no dependencies other than React as a peer dependency and is written from the ground up with hooks in mind. It is easy to integrate into any form UI. To achieve this, no rendererable form or field component are provided or required. Instead hooks are used transform any components needed into forms. If desired, this allows forms to be created even without the use of standard browser form elements.
+A library for creating forms in React using hooks. This project requires no dependencies other than React as a peer dependency and is written from the ground up with hooks in mind. It is easy to integrate into any form UI. To achieve this, no renderable form or field component are provided or required. Instead hooks are used to transform any component needed into a form. If desired, this allows forms to be created even without the use of standard browser form elements.
 
 - built using React Hooks
 - independent field handling
@@ -18,9 +18,9 @@ npm install --save amiable-forms
 
 # Getting Started
 
-First wrap the form components with the `<Form>` component provided by `amiable-forms`. This will not add any visual components or inject any props. Its purpose is only to provide a context for the hooks to use.
+First wrap the form components with the `<AmiableForm>` component provided by `amiable-forms`. This will not add any visual components or inject any props. Its purpose is only to provide a context for the hooks to use.
 
-Fields components can be defined with the `useField` hook. This can be done many different ways, a very simplistic version is shown in the example below.
+Field components can be defined with the `useField` hook. This can be done many different ways, a very simplistic version is shown in the example below.
 
 The last hook that will most likely be required is the `useSubmit` hook which provides an `onSubmit` method.
 
@@ -38,31 +38,32 @@ const SubmitButton = () => {
 const process = values => console.log('Submit', values)
 
 const LoginForm = () => (
-  <Form process={process}>
+  <AmiableForm process={process}>
     <Input name="username" placeholder="username" />
     <Input name="password" placeholder="password" type="password" />
     <SubmitButton />
-  </Form>
+  </AmiableForm>
 )
 ```
 To see a more complete example of a form built with `amiable-forms` use this codesandbox link: 
-[Simple Example Form](https://codesandbox.io/s/simple-amiable-forms-example-7qckb)
+[Simple Example Form](https://codesandbox.io/s/simple-amiable-forms-example-7qckb)  
+// TODO: update example to use 1.1.4
 
 # Documentation
 
-## Form
+## AmiableForm
 
-The `Form` component is used to provide a React context and is not a visual component. This shouldn't be confused with any visual UI Form components that might be required for your specific form setup. The `Form` component must be wrapped around the entire form for any of the `amiable-forms` hooks and helper components to function. This allows form state to be shared without needing explicit prop passing.
+The `AmiableForm` component is used to provide a React context and is not a visual component. This shouldn't be confused with any visual UI Form components that might be required for your specific form setup. The `AmiableForm` component must be wrapped around the entire form for any of the `amiable-forms` hooks and helper components to function. This allows form state to be shared without needing explicit prop passing.
 
 ```jsx
-<Form
+<AmiableForm
   process={() => {}}
   processInvalid={() => {}}
   validate={() => {}}
   transform={() => {}}
   initialValues={{}}>
   ...
-</Form>
+</AmiableForm>
 ```
 
 | Prop Name | Type | Description | |
@@ -70,7 +71,7 @@ The `Form` component is used to provide a React context and is not a visual comp
 | process | `function(values, ...args)` | function called when a valid form is submitted | required
 | processInvalid | `function(values, formMeta, fields)` | function called when an invalid form is submitted |
 | validate | `function(values)` | return error string |
-| transform | `function({ current, next })` |return transformed state |
+| transform | `function({ current, next })` | return transformed state |
 | initialValues | `plain object` | the initial values to set to the form |
 
 ## useField
@@ -92,6 +93,8 @@ const YourField = () => {
 | validators | `[function(), ...]` | An array of validation function |
 | parse | `function()` | |
 | format | `function()` | |
+| parseWhenFocused | `boolean` | |
+| custom | `dunno` | |
 
 The `useField` hook returns many variables to accommodate a variety of situations.
 
@@ -101,13 +104,15 @@ The `useField` hook returns many variables to accommodate a variety of situation
 | submitted | `boolean` | if the form has attempted to be submitted |
 | setValue | `function()` | sets the value of the field |
 | setVisited | `function()` | marks the field as visited |
+| setFocused | `function()` | marks the field as focused |
 | onChange | `function(ev)` | helper handler, calls `setValue` |
-| onBlur | `function(ev)` | helper handler, calls `setVisited(true)` |
+| onBlur | `function(ev)` | helper handler, calls `setVisited()` |
 | error | `string` | contains error messages from the validator functions |
-| valid | `boolean` | signals the field is valid or invalid |
+| valid | `boolean` | signals if the field is valid or invalid |
 | touched | `boolean` | signals if the field's value has ever changed |
-| visited | `boolean` | signals if a user as _clicked through_ a field |
+| visited | `boolean` | signals if a user has _clicked through_ a field |
 | dirty | `boolean` | signals if the value of the field differs from the initial state |
+| cleanValue | `any` | the initial value of the field(?) |
 
 ### Field Validators
 
@@ -122,7 +127,7 @@ const numeric = value => (!value || /^\\d+$/i.test(value)) ? undefined : 'invali
 
 ### Field Parse and Format
 
-The `parse` and `format` functions can be used when the value shown to the user in the form differs from the what needs to be saved in the data. For example, date fields might want to display a format of MM/DD/YYYY to the user but store the value as YYYY-MM-DD. The `parse` function is used to read the information in the field and convert it into the form data format. `format` is used to convert the form data value into a value to be shown to the user. The `parse` function can also be used as a way to normalize the user input.
+The `parse` and `format` functions can be used when the value shown to the user in the form differs from what needs to be saved in the data. For example, date fields might want to display a format of MM/DD/YYYY to the user but store the value as YYYY-MM-DD. The `parse` function is used to read the information in the field and convert it into the form data format. `format` is used to convert the form data value into a value to be shown to the user. The `parse` function can also be used as a way to normalize the user input. By default, the value will be parsed when entered, but can be turned off by setting `parseWhenFocused` to `false`.
 
 **Validator Function Exmaples**
 ```js
@@ -133,7 +138,7 @@ const format = value => (value || '').toLowerCase()
 
 ## useForm
 
-The `useForm` hook is the base `amiable-forms` hook and provides access to the entire state of the form. All of the other hooks are built using `useForm`. By default `useForm` will cause the component it is in to render on every change. To avoid unnessary renders, the `shouldUpdate` function needs to be passed into it as an argument.
+The `useForm` hook is the base `amiable-forms` hook and provides access to the entire state of the form. All of the other hooks are built using `useForm`. By default, `useForm` will cause the component it is in to render on every change. To avoid unnecessary renders, the `shouldUpdate` function needs to be passed into it as an argument.
 
 ```jsx
 const never = () => false
@@ -160,8 +165,8 @@ const { setValues } = useForm({ shouldUpdate: never })
 | cleanValues | `object` | state |
 | submit | `function()` | submission |
 | onSubmit | `function()` | submission |
-| register | `function()` | registraion |
-| deregister | `function()` | registraion |
+| register | `function()` | registration |
+| deregister | `function()` | registration |
 
 ### Field Meta
 | Name | Type | Description |
@@ -172,6 +177,7 @@ const { setValues } = useForm({ shouldUpdate: never })
 | visited | `boolean` |
 | dirty | `boolean` |
 | registered | `boolean` |
+| focused | `boolean` |
 
 ### Form Meta
 | Name | Type | Description |
@@ -188,9 +194,13 @@ const { setValues } = useForm({ shouldUpdate: never })
 
 # Helper Utilties
 
+## useFieldValue
+
 ## useArrayField
 
 ## useRepeated
+
+## useFieldCustomMeta
 
 ## Debug
 
