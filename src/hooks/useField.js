@@ -5,6 +5,7 @@ import valueChangedInState from '../util/valueChangedInState'
 import errorWillChangeInState from '../util/errorWillChangeInState'
 import normalizeEmpty from '../util/normalizeEmpty'
 import validate from '../util/validate'
+import deepEqual from '../util/deepEqual'
 
 const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
@@ -20,7 +21,9 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
   const requestUpdateValueRef = useRef()
   const shouldUpdate = useCallback(createShouldUpdate({ name, validators, requestUpdateValueRef }), [name, validators, requestUpdateValueRef])
 
-  const { values, fields, setField, setValue, removeField, meta, cleanValues } = useForm({ shouldUpdate })
+  const { setField, setValue, removeField, stateRef } = useForm({ shouldUpdate, name })
+  const { fields, values, cleanValues, meta } = stateRef.current
+
   useEffect(() => () => removeField(name), [name])
 
   const field = fields[name] || DEFAULT_FIELD
@@ -38,7 +41,13 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
     const visited = touched || field.visited || false
     const dirty = cleanValue !== value
     const focused = field.focused
-    setField(name, { error, valid, touched, visited, dirty, focused, custom })
+
+    const newField = { error, valid, touched, visited, dirty, focused, custom, registered: true }
+
+    if (!deepEqual(newField, field)) {
+      setField(name, newField)
+    }
+
     prevValue.current = value
     setValue(name, value)
   }
