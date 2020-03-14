@@ -1,25 +1,24 @@
-import { useContext, useEffect, useCallback } from 'react'
+import { useContext, useEffect } from 'react'
 import { formContext } from '../components/AmiableForm'
 import useRender from '../hooks/useRender'
 
-const alwaysUpdate = () => true
+const ALWAYS_UPDATE = () => true
 
-export default ({ shouldUpdate = alwaysUpdate } = {}) => {
+export default ({ shouldUpdate = ALWAYS_UPDATE } = {}) => {
   const render = useRender()
   const formGetterRef = useContext(formContext)
   if (!formGetterRef.current) throw new Error('amiable-form hooks must be use inside a <AmiableForm>')
-  const form = formGetterRef.current()
 
-  const registration = useCallback((...args) => {
-    if (shouldUpdate(...args)) {
-      render()
-    }
-  }, [shouldUpdate, render])
+  const form = formGetterRef.current()
+  const { addUpdateHandler, removeUpdateHandler } = form
 
   useEffect(() => {
-    form.register(registration)
-    return () => form.deregister(registration)
-  }, [form.register, form.deregister])
+    const onStateUpdate = (event) => {
+      if (shouldUpdate(event)) console.log('update requested') || render()
+    }
+    addUpdateHandler(onStateUpdate)
+    return () => removeUpdateHandler(onStateUpdate)
+  }, [addUpdateHandler, removeUpdateHandler, shouldUpdate])
 
   return form
 }

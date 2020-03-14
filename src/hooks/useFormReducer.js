@@ -1,24 +1,27 @@
-import { useRef, useCallback, useMemo } from 'react'
+import { useRef } from 'react'
 import reducerCreator, { initialState } from '../state/reducer'
 import * as actionTypes from '../state/actions'
 
-export default ({ initialValues, transform, validate, onUpdate }) => {
+export default ({ initialValues, transform, validate, triggerStateUpdate }) => {
   const stateRef = useRef()
-  const reducer = useMemo(() => reducerCreator({ transform, validate }), [transform, validate])
+  const memoRef = useRef()
+  if (memoRef.current) return memoRef.current
 
-  const dispatch = useCallback(action => {
+  const reducer = reducerCreator({ transform, validate })
+
+  const dispatch = action => {
     const previous = stateRef.current
     const current = reducer(previous, action)
     stateRef.current = current
-    onUpdate({ previous, current })
-  }, [stateRef, reducer])
-
-  if (!stateRef.current) {
-    stateRef.current = initialState
-    if (initialValues) {
-      dispatch({ type: actionTypes.SET_VALUES, values: initialValues })
-    }
+    triggerStateUpdate({ previous, current })
   }
 
-  return [stateRef, dispatch]
+  stateRef.current = initialState
+
+  if (initialValues) {
+    dispatch({ type: actionTypes.SET_VALUES, values: initialValues })
+  }
+
+  memoRef.current = [stateRef, dispatch]
+  return memoRef.current
 }

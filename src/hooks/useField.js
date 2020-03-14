@@ -11,29 +11,36 @@ const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
 const DEFAULT_FIELD = {}
 
-const createShouldUpdate = ({ name, validators, requestUpdateValueRef }) => {
-  const errorCheck = errorWillChangeInState({ name, validators, requestUpdateValueRef })
+const createShouldUpdate = ({ name, validators, rerunFieldValidationRef }) => {
+  const errorCheck = errorWillChangeInState({ name, validators, rerunFieldValidationRef })
   const valueCheck = valueChangedInState(name)
   return state => errorCheck(state) || valueCheck(state)
 }
 
-export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true, custom }) => {
-  const requestUpdateValueRef = useRef()
-  const shouldUpdate = useCallback(createShouldUpdate({ name, validators, requestUpdateValueRef }), [name, validators, requestUpdateValueRef])
-
-  const { setField, setValue, removeField, stateRef } = useForm({ shouldUpdate, name })
+const computeFieldState = ({ stateRef, name, parseWhenFocused }) => {
   const { fields, values, cleanValues, meta } = stateRef.current
-
-  useEffect(() => () => removeField(name), [name])
-
   const field = fields[name] || DEFAULT_FIELD
   const value = normalizeEmpty(get(values, name, undefined))
   const cleanValue = normalizeEmpty(get(cleanValues, name, undefined))
-  const prevValue = useRef()
   const bypassParseDueToFocus = field.focused && parseWhenFocused === false
+  return { field, meta, value, cleanValue, bypassParseDueToFocus }
+}
 
-  const _setValue = (val, { touch = false } = {}) => {
-    requestUpdateValueRef.current = undefined
+const useFieldSetup = ({ name, validators }) => {
+  const rerunFieldValidationRef = useRef()
+  const shouldUpdate = useCallback(createShouldUpdate({ name, validators, rerunFieldValidationRef }), [name, validators, rerunFieldValidationRef])
+  const { setField, setValue, removeField, stateRef } = useForm({ shouldUpdate, name })
+  useEffect(() => () => removeField(name), [name])
+  return { setField, setValue, stateRef, rerunFieldValidationRef }
+}
+
+const useFieldActions = ({ name, validators, setField, setValue, fieldStateRef, rerunFieldValidationRef, custom, parse, prevValueRef }) => {
+  const memoRef = useRef()
+  if (memoRef.current) return memoRef.current
+
+  const setValueWithEffect = (val, { touch = false } = {}) => {
+    const { bypassParseDueToFocus, values, field, cleanValue } = fieldStateRef.current
+
     const value = bypassParseDueToFocus ? val : parse(val, name)
     const error = validate({ value, values, validators })
     const valid = !error
@@ -41,50 +48,68 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
     const visited = touched || field.visited || false
     const dirty = cleanValue !== value
     const focused = field.focused
-
     const newField = { error, valid, touched, visited, dirty, focused, custom, registered: true }
 
     if (!deepEqual(newField, field)) {
-      setField(name, newField)
+      // setField(name, newField)
     }
 
-    prevValue.current = value
+    rerunFieldValidationRef.current = undefined
+    prevValueRef.current = value
+
     setValue(name, value)
   }
 
-  if (value !== prevValue.current || requestUpdateValueRef.current || !field.registered) {
-    _setValue(value)
-  }
-
   const setFocused = focused => {
+    const { field } = fieldStateRef.current
     setField(name, { ...field, focused: true })
   }
 
   const setVisited = () => {
+    const { field } = fieldStateRef.current
     setField(name, { ...field, visited: true })
   }
 
   const onChange = event => {
-    _setValue(event.target.value, { touch: true })
+    setValueWithEffect(event.target.value, { touch: true })
   }
 
   const onBlur = () => {
+    const { bypassParseDueToFocus, value, field } = fieldStateRef.current
     if (bypassParseDueToFocus) setValue(name, parse(value))
     setField(name, { ...field, visited: true, focused: false })
   }
 
   const onFocus = () => setFocused(true)
 
+  memoRef.current = { setValueWithEffect, setFocused, setVisited, onChange, onBlur, onFocus }
+  return memoRef.current
+}
+
+export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true, custom }) => {
+  const { setField, setValue, stateRef, rerunFieldValidationRef } = useFieldSetup({ name, validators })
+  const fieldStateRef = useRef()
+  const prevValueRef = useRef()
+  fieldStateRef.current = computeFieldState({ stateRef, name, parseWhenFocused })
+  const { field, meta, value, cleanValue } = fieldStateRef.current
+
+  const actions = useFieldActions({ name, validators, setField, setValue, fieldStateRef, rerunFieldValidationRef, custom, parse, prevValueRef })
+
+  if (value !== prevValueRef.current || rerunFieldValidationRef.current || !field.registered) {
+    actions.setValueWithEffect(value)
+  }
+
   return {
-    ...field,
+    setValue: actions.setValueWithEffect,
+    setVisited: actions.setVisited,
+    setFocused: actions.setFocused,
+    onChange: actions.onChange,
+    onBlur: actions.onBlur,
+    onFocus: actions.onFocus,
+
     value: format(value),
+    ...field,
     submitted: meta.submitted,
-    setValue: _setValue,
-    setVisited,
-    setFocused,
-    cleanValue,
-    onChange,
-    onBlur,
-    onFocus
+    cleanValue
   }
 }
