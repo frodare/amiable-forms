@@ -7,6 +7,7 @@ import buildSubmitHandlers from '../util/buildSubmitHandlers'
 export const formContext = createContext({})
 
 const AmiableForm = props => {
+  console.log('------------- RENDERING FORM COMP')
   const {
     children,
     validate,
@@ -20,7 +21,7 @@ const AmiableForm = props => {
 
   const formRef = useRef()
 
-  const actions = useFormActions({ dispatch, stateRef })
+  const actions = useFormActions({ dispatch, formRef })
 
   const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
 

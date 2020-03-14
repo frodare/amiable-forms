@@ -51,7 +51,7 @@ const useFieldActions = ({ name, validators, setField, setValue, fieldStateRef, 
     const newField = { error, valid, touched, visited, dirty, focused, custom, registered: true }
 
     if (!deepEqual(newField, field)) {
-      // setField(name, newField)
+      setField(name, newField)
     }
 
     rerunFieldValidationRef.current = undefined

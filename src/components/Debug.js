@@ -2,7 +2,8 @@ import React from 'react'
 import useForm from '../hooks/useForm'
 
 const Debug = () => {
-  const { meta, fields, values, cleanValues } = useForm()
+  const { stateRef } = useForm({ name: 'debug' })
+  const { meta, fields, values, cleanValues } = stateRef.current
   return (
     <>
       <h5>Values</h5>
