@@ -5,21 +5,23 @@ import useRender from '../hooks/useRender'
 const ALWAYS_UPDATE = () => true
 
 export default ({ shouldUpdate = ALWAYS_UPDATE, name } = {}) => {
-  console.log('------------- RENDERING useForm', name)
   const render = useRender()
   const formGetterRef = useContext(formContext)
   if (!formGetterRef.current) throw new Error('amiable-form hooks must be use inside a <AmiableForm>')
 
-  const form = formGetterRef.current()
+  const form = formGetterRef.current
   const { addUpdateHandler, removeUpdateHandler } = form
 
   useEffect(() => {
     const onStateUpdate = (event) => {
-      if (shouldUpdate(event)) console.log('rerender update requested for ', name) || render()
+      if (shouldUpdate(event)) render()
     }
     addUpdateHandler(onStateUpdate)
     return () => removeUpdateHandler(onStateUpdate)
   }, [addUpdateHandler, removeUpdateHandler, shouldUpdate])
 
-  return form
+  return {
+    ...form.stateRef.current,
+    ...form
+  }
 }

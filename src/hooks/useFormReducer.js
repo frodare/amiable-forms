@@ -1,11 +1,7 @@
-import { useMemo } from 'react'
 import reducerCreator, { initialState } from '../state/reducer'
 import * as actionTypes from '../state/actions'
 
-export default ({ initialValues, transform, validate, triggerStateUpdate }) => useMemo(() => {
-  // const memoRef = useRef()
-  // const stateRef = useRef()
-  // if (memoRef.current) return memoRef.current
+export default ({ initialValues, transform, validate, triggerStateUpdate }) => {
   const stateRef = {}
 
   const reducer = reducerCreator({ transform, validate })
@@ -24,7 +20,4 @@ export default ({ initialValues, transform, validate, triggerStateUpdate }) => u
   }
 
   return [stateRef, dispatch]
-
-  // memoRef.current = [stateRef, dispatch]
-  // return memoRef.current
-}, [])
+}

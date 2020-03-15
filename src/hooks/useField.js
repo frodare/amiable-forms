@@ -5,7 +5,6 @@ import valueChangedInState from '../util/valueChangedInState'
 import errorWillChangeInState from '../util/errorWillChangeInState'
 import normalizeEmpty from '../util/normalizeEmpty'
 import validate from '../util/validate'
-import deepEqual from '../util/deepEqual'
 
 const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
@@ -29,12 +28,12 @@ const computeFieldState = ({ stateRef, name, parseWhenFocused }) => {
 const useFieldSetup = ({ name, validators }) => {
   const rerunFieldValidationRef = useRef()
   const shouldUpdate = useCallback(createShouldUpdate({ name, validators, rerunFieldValidationRef }), [name, validators, rerunFieldValidationRef])
-  const { setField, setValue, removeField, stateRef } = useForm({ shouldUpdate, name })
+  const { setField, setValue, setValueWithField, removeField, stateRef } = useForm({ shouldUpdate, name })
   useEffect(() => () => removeField(name), [name])
-  return { setField, setValue, stateRef, rerunFieldValidationRef }
+  return { setField, setValue, setValueWithField, stateRef, rerunFieldValidationRef }
 }
 
-const useFieldActions = ({ name, validators, setField, setValue, fieldStateRef, rerunFieldValidationRef, custom, parse, prevValueRef }) => {
+const useFieldActions = ({ name, validators, setValueWithField, setValue, setField, fieldStateRef, rerunFieldValidationRef, custom, parse, prevValueRef }) => {
   const memoRef = useRef()
   if (memoRef.current) return memoRef.current
 
@@ -50,14 +49,10 @@ const useFieldActions = ({ name, validators, setField, setValue, fieldStateRef, 
     const focused = field.focused
     const newField = { error, valid, touched, visited, dirty, focused, custom, registered: true }
 
-    if (!deepEqual(newField, field)) {
-      setField(name, newField)
-    }
-
     rerunFieldValidationRef.current = undefined
     prevValueRef.current = value
 
-    setValue(name, value)
+    setValueWithField(name, value, newField)
   }
 
   const setFocused = focused => {
@@ -87,17 +82,19 @@ const useFieldActions = ({ name, validators, setField, setValue, fieldStateRef, 
 }
 
 export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true, custom }) => {
-  const { setField, setValue, stateRef, rerunFieldValidationRef } = useFieldSetup({ name, validators })
+  const { setValueWithField, setField, setValue, stateRef, rerunFieldValidationRef } = useFieldSetup({ name, validators })
   const fieldStateRef = useRef()
   const prevValueRef = useRef()
   fieldStateRef.current = computeFieldState({ stateRef, name, parseWhenFocused })
   const { field, meta, value, cleanValue } = fieldStateRef.current
 
-  const actions = useFieldActions({ name, validators, setField, setValue, fieldStateRef, rerunFieldValidationRef, custom, parse, prevValueRef })
+  const actions = useFieldActions({ name, validators, setValueWithField, setValue, setField, fieldStateRef, rerunFieldValidationRef, custom, parse, prevValueRef })
 
-  if (value !== prevValueRef.current || rerunFieldValidationRef.current || !field.registered) {
-    actions.setValueWithEffect(value)
-  }
+  useEffect(() => {
+    if (value !== prevValueRef.current || rerunFieldValidationRef.current || !field.registered) {
+      actions.setValueWithEffect(value)
+    }
+  })
 
   return {
     setValue: actions.setValueWithEffect,

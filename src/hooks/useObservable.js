@@ -1,6 +1,5 @@
-import { useMemo } from 'react'
 
-export default () => useMemo(() => {
+export default () => {
   const handlers = []
 
   const trigger = event => {
@@ -19,4 +18,4 @@ export default () => useMemo(() => {
   }
 
   return [trigger, addHandler, removeHandler]
-}, [])
+}

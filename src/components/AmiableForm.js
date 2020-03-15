@@ -6,41 +6,37 @@ import buildSubmitHandlers from '../util/buildSubmitHandlers'
 
 export const formContext = createContext({})
 
+// TODO: large form example: all fields validate when typing into one
+// TODO: does this need to be a function?
+// TODO: values is null on match form field
+
 const AmiableForm = props => {
-  console.log('------------- RENDERING FORM COMP')
-  const {
-    children,
-    validate,
-    transform,
-    initialValues
-  } = props
-
-  const [triggerStateUpdate, addUpdateHandler, removeUpdateHandler] = useObservable()
-
-  const [stateRef, dispatch] = useFormReducer({ initialValues, transform, validate, triggerStateUpdate })
-
   const formRef = useRef()
 
-  const actions = useFormActions({ dispatch, formRef })
+  if (!formRef.current) {
+    const { validate, transform, initialValues } = props
 
-  const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
+    const [triggerStateUpdate, addUpdateHandler, removeUpdateHandler] = useObservable()
 
-  // TODO: large form example: all fields validate when typing into one
-  // TODO: does this need to be a function?
-  // TODO: values is null on match form field
-  formRef.current = () => ({
-    ...actions,
-    ...stateRef.current,
-    stateRef,
-    submit,
-    onSubmit,
-    addUpdateHandler,
-    removeUpdateHandler
-  })
+    const [stateRef, dispatch] = useFormReducer({ initialValues, transform, validate, triggerStateUpdate })
+
+    const actions = useFormActions({ dispatch, formRef })
+
+    const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
+
+    formRef.current = {
+      ...actions,
+      stateRef,
+      submit,
+      onSubmit,
+      addUpdateHandler,
+      removeUpdateHandler
+    }
+  }
 
   return (
     <formContext.Provider value={formRef}>
-      {children}
+      {props.children}
     </formContext.Provider>
   )
 }
