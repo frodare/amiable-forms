@@ -1,13 +1,12 @@
 import React, { useRef, createContext } from 'react'
-import useObservable from '../hooks/useObservable'
+import notifier from '../util/notifier'
 import useFormActions from '../hooks/useFormActions'
-import useFormReducer from '../hooks/useFormReducer'
+import createStore from '../state/createStore'
 import buildSubmitHandlers from '../util/buildSubmitHandlers'
 
 export const formContext = createContext({})
 
 // TODO: large form example: all fields validate when typing into one
-// TODO: does this need to be a function?
 // TODO: values is null on match form field
 
 const AmiableForm = props => {
@@ -16,12 +15,9 @@ const AmiableForm = props => {
   if (!formRef.current) {
     const { validate, transform, initialValues } = props
 
-    const [triggerStateUpdate, addUpdateHandler, removeUpdateHandler] = useObservable()
-
-    const [stateRef, dispatch] = useFormReducer({ initialValues, transform, validate, triggerStateUpdate })
-
+    const [notifyStateUpdate, addUpdateHandler, removeUpdateHandler] = notifier()
+    const [stateRef, dispatch] = createStore({ initialValues, transform, validate, notifyStateUpdate })
     const actions = useFormActions({ dispatch, formRef })
-
     const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
 
     formRef.current = {

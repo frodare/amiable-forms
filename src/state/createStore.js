@@ -1,7 +1,7 @@
-import reducerCreator, { initialState } from '../state/reducer'
-import * as actionTypes from '../state/actions'
+import reducerCreator, { initialState } from './reducer'
+import * as actionTypes from './actions'
 
-export default ({ initialValues, transform, validate, triggerStateUpdate }) => {
+export default ({ initialValues, transform, validate, notifyStateUpdate }) => {
   const stateRef = {}
 
   const reducer = reducerCreator({ transform, validate })
@@ -10,7 +10,7 @@ export default ({ initialValues, transform, validate, triggerStateUpdate }) => {
     const previous = stateRef.current
     const current = reducer(previous, action)
     stateRef.current = current
-    triggerStateUpdate({ previous, current })
+    notifyStateUpdate({ previous, current })
   }
 
   stateRef.current = initialState

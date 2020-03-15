@@ -2,7 +2,7 @@
 export default () => {
   const handlers = []
 
-  const trigger = event => {
+  const notify = event => {
     handlers.forEach(handler => handler(event))
   }
 
@@ -17,5 +17,5 @@ export default () => {
     }
   }
 
-  return [trigger, addHandler, removeHandler]
+  return [notify, addHandler, removeHandler]
 }
