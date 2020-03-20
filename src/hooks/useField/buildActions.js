@@ -1,6 +1,6 @@
 import validate from '../../util/validate'
 
-export default ({ name, validators, parse, fieldStateRef }) => {
+export default ({ name, validators, parse, fieldStateRef, custom }) => {
   const setValueWithEffect = (val, { touch = false } = {}) => {
     fieldStateRef.current.requestRerun = undefined
 
@@ -14,7 +14,7 @@ export default ({ name, validators, parse, fieldStateRef }) => {
     const visited = touched || field.visited || false
     const dirty = cleanValue !== value
     const focused = field.focused
-    const newField = { error, valid, touched, visited, dirty, focused, custom: fieldStateRef.current.custom, registered: true }
+    const newField = { error, valid, touched, visited, dirty, focused, custom, registered: true }
 
     fieldStateRef.current.prevValue = value
     fieldStateRef.current.field = newField

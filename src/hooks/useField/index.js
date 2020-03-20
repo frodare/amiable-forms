@@ -7,7 +7,12 @@ import normalizeEmpty from '../../util/normalizeEmpty'
 import buildActions from './buildActions'
 import useAutoSet from './useAutoSet'
 
+// refactor set
+
 // custom meta example broken
+// create validation example
+// create a complex object example
+// tests
 
 const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
@@ -37,7 +42,7 @@ const useFieldSetup = ({ name, validators }) => {
 
 export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT_FORMAT, parseWhenFocused = true, custom }) => {
   const fieldStateRef = useFieldSetup({ name, validators })
-  const actions = useMemo(() => buildActions({ name, validators, parse, fieldStateRef }), [name, validators, parse, fieldStateRef])
+  const actions = useMemo(() => buildActions({ name, validators, parse, fieldStateRef, custom }), [name, validators, parse, fieldStateRef, custom])
 
   const { fields, values, cleanValues } = fieldStateRef.current.stateRef.current
   const field = fields[name] || DEFAULT_FIELD
