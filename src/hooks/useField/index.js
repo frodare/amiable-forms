@@ -7,13 +7,6 @@ import normalizeEmpty from '../../util/normalizeEmpty'
 import buildActions from './buildActions'
 import useAutoSet from './useAutoSet'
 
-// refactor set
-
-// custom meta example broken
-// create validation example
-// create a complex object example
-// tests
-
 const DEFAULT_PARSE = v => v || v === 0 ? v : undefined
 const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
 const DEFAULT_FIELD = {}
