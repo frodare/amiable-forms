@@ -4,16 +4,20 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "babel ./src -d ./dist",
     "dev": "babel ./src -d ./dist -w",
-    "lint": "standard \"./src/**/*.js\""
+    "lint": "standard \"./src/**/*.js\"",
+    "lint-fix": "standard --fix \"./src/**/*.js\"",
+    "test": "jest --watch"
   },
   "keywords": [
     "react",
     "form",
     "hooks"
   ],
+  "standard": {
+    "env": "jest"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/frodare/amiable-forms.git"
@@ -41,6 +45,7 @@
     "@testing-library/react-hooks": "^1.1.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^24.9.0",
+    "jest": "^25.1.0",
     "standard": "^13.1.0",
     "standard-react": "^4.0.0"
   }

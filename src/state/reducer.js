@@ -82,14 +82,14 @@ export default ({ transform, validate } = {}) => {
     fields: {
       ...state.fields,
       [action.name]: {
-        error: action.error || '',
-        valid: !!action.valid,
-        touched: !!action.touched,
-        visited: !!action.visited,
-        dirty: !!action.dirty,
-        focused: !!action.focused,
+        error: action.field.error || '',
+        valid: !!action.field.valid,
+        touched: !!action.field.touched,
+        visited: !!action.field.visited,
+        dirty: !!action.field.dirty,
+        focused: !!action.field.focused,
         registered: true,
-        custom: action.custom
+        custom: action.field.custom
       }
     }
   })
@@ -98,6 +98,10 @@ export default ({ transform, validate } = {}) => {
     ...state,
     values: set(clone(state.values), action.name, action.value)
   })
+
+  const setValueWithField = (state, action) => {
+    return setValue(setField(state, action), action)
+  }
 
   const setMeta = (state, action) => ({
     ...state,
@@ -140,6 +144,7 @@ export default ({ transform, validate } = {}) => {
     switch (action.type) {
       case actions.SET_FIELD: return setField(state, action)
       case actions.SET_VALUE: return setValue(state, action)
+      case actions.SET_VALUE_WITH_FIELD: return setValueWithField(state, action)
       case actions.SET_META: return setMeta(state, action)
       case actions.REMOVE_FIELD: return removeField(state, action)
       case actions.SET_VALUES: return setValues(state, action)
