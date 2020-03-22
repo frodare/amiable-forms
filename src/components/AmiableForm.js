@@ -6,9 +6,6 @@ import buildSubmitHandlers from '../util/buildSubmitHandlers'
 
 export const formContext = createContext({})
 
-// TODO: large form example: all fields validate when typing into one
-// TODO: values is null on match form field
-
 const AmiableForm = props => {
   const formRef = useRef()
 

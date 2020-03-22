@@ -4,7 +4,7 @@ import useRender from '../hooks/useRender'
 
 const ALWAYS_UPDATE = () => true
 
-export default ({ shouldUpdate = ALWAYS_UPDATE, name } = {}) => {
+export default ({ shouldUpdate = ALWAYS_UPDATE } = {}) => {
   const render = useRender()
   const formGetterRef = useContext(formContext)
   if (!formGetterRef.current) throw new Error('amiable-form hooks must be use inside a <AmiableForm>')
