@@ -29,7 +29,7 @@ export default ({ stateRef, actions, props }) => {
       actions.setMetaValue(metaKeys.SUBMITTED, true)
     }
 
-    const result = processFn(fieldValues, { ...state }, ...args)
+    const result = processFn(fieldValues, { ...state, ...actions }, ...args)
 
     if (result instanceof Promise) {
       actions.setMetaValue(metaKeys.SUBMITTING, true)
