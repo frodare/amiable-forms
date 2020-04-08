@@ -37,7 +37,8 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
   const fieldStateRef = useFieldSetup({ name, validators })
   const actions = useMemo(() => buildActions({ name, validators, parse, fieldStateRef, custom }), [name, validators, parse, fieldStateRef, custom])
 
-  const { fields, values, cleanValues } = fieldStateRef.current.stateRef.current
+  const stateRef = fieldStateRef.current.stateRef
+  const { fields, values, cleanValues } = stateRef.current
   const field = fields[name] || DEFAULT_FIELD
   const value = normalizeEmpty(get(values, name, undefined))
   const cleanValue = normalizeEmpty(get(cleanValues, name, undefined))
@@ -60,7 +61,9 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
 
     value: format(fieldStateRef.current.value),
     ...fieldStateRef.current.field,
-    submitted: fieldStateRef.current.meta.submitted,
-    cleanValue: fieldStateRef.current.cleanValue
+    submitted: stateRef.current.meta.submitted,
+    cleanValue: stateRef.current.cleanValue,
+    submitCount: stateRef.current.meta.submitCount,
+    submitting: stateRef.current.meta.submitting
   }
 }
