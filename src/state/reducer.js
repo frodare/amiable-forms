@@ -137,7 +137,10 @@ export default ({ transform, validate } = {}) => {
   }
 
   const reset = (state, action) => {
-    return state
+    return {
+      ...state,
+      values: state.cleanValues
+    }
   }
 
   return postProcess((state, action) => {
