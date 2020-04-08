@@ -1,5 +1,7 @@
 export const TOUCHED = 'touched'
 export const SUBMITTED = 'submitted'
+export const SUBMITTING = 'submitting'
+export const SUBMIT_COUNT = 'submitCount'
 export const VISITED = 'visited'
 export const VALID = 'valid'
 export const DIRTY = 'dirty'

@@ -2,7 +2,7 @@ import * as metaKeys from '../state/metaKeys'
 import get from '../util/get'
 import set from '../util/set'
 
-const NOOP = () => {}
+const NOOP = () => { }
 
 const reduceFieldValue = allValues => (fieldValues, fieldName) => {
   const value = get(allValues, fieldName)
@@ -19,9 +19,23 @@ export default ({ stateRef, actions, props }) => {
     const state = stateRef.current
     const processFn = (state.meta.valid ? process : processInvalid) || NOOP
     const fieldValues = getFieldValues(state.values, state.fields)
-    processFn(fieldValues, { ...state }, ...args)
-    if (!state.meta[metaKeys.SUBMITTED]) {
+    const { submitting } = state.meta
+
+    if (submitting) {
+      return
+    }
+
+    const setSubmitted = () => {
       actions.setMetaValue(metaKeys.SUBMITTED, true)
+    }
+
+    const result = processFn(fieldValues, { ...state }, ...args)
+
+    if (result instanceof Promise) {
+      actions.setMetaValue(metaKeys.SUBMITTING, true)
+      result.then(setSubmitted).catch(setSubmitted)
+    } else {
+      setSubmitted()
     }
   }
 

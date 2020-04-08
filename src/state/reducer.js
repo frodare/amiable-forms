@@ -1,4 +1,5 @@
 import * as actions from './actions'
+import * as metaKeys from './metaKeys'
 import set from '../util/set'
 import clone from '../util/clone'
 
@@ -9,6 +10,8 @@ export const initialState = {
   meta: {
     touched: false,
     submitted: false,
+    submitCount: 0,
+    submitting: false,
     visited: false,
     valid: true,
     dirty: false
@@ -17,6 +20,8 @@ export const initialState = {
 
 const metaIsDifferent = (a, b) => {
   if (a.submitted !== b.submitted) return true
+  if (a.submitCount !== b.submitCount) return true
+  if (a.submitting !== b.submitting) return true
   if (a.touched !== b.touched) return true
   if (a.dirty !== b.dirty) return true
   if (a.visited !== b.visited) return true
@@ -40,6 +45,8 @@ export default ({ transform, validate } = {}) => {
 
     const newMeta = {
       submitted: meta.submitted,
+      submitting: meta.submitting,
+      submitCount: meta.submitCount,
       touched,
       dirty,
       visited,
@@ -103,13 +110,25 @@ export default ({ transform, validate } = {}) => {
     return setValue(setField(state, action), action)
   }
 
-  const setMeta = (state, action) => ({
-    ...state,
-    meta: {
-      ...state.meta,
-      [action.key]: action.value
+  const setMeta = (state, action) => {
+    const meta = { ...state.meta }
+
+    meta[action.key] = action.value
+
+    if (action.key === metaKeys.SUBMITTED && action.value === true) {
+      meta[metaKeys.SUBMITTING] = false
+      meta[metaKeys.SUBMIT_COUNT] = meta[metaKeys.SUBMIT_COUNT] + 1
     }
-  })
+
+    if (action.key === metaKeys.SUBMITTING && action.value === true) {
+      meta[metaKeys.SUBMITTED] = false
+    }
+
+    return {
+      ...state,
+      meta
+    }
+  }
 
   const removeField = (state, action) => {
     const fields = { ...state.fields }
