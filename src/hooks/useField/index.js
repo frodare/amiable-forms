@@ -48,7 +48,7 @@ export default ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAULT
   fieldStateRef.current.cleanValue = cleanValue
   fieldStateRef.current.bypassParseDueToFocus = bypassParseDueToFocus
 
-  useAutoSet({ actions, fieldStateRef })
+  useAutoSet({ name, fieldStateRef, actions })
 
   return {
     setValue: actions.setValueWithEffect,
