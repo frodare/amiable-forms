@@ -1,30 +1,27 @@
-import React, { useRef, createContext } from 'react'
+import React, { useRef, createContext, useMemo } from 'react'
 import notifier from '../util/notifier'
 import useFormActions from '../hooks/useFormActions'
-import createStore from '../state/createStore'
+import useFormStore from '../state/useFormStore'
 import buildSubmitHandlers from '../util/buildSubmitHandlers'
 
 export const formContext = createContext({})
 
 const AmiableForm = props => {
+  const { validate, transform, initialValues } = props
   const formRef = useRef()
 
-  if (!formRef.current) {
-    const { validate, transform, initialValues } = props
+  const [notifyStateUpdate, addUpdateHandler, removeUpdateHandler] = useMemo(notifier, [])
+  const [stateRef, dispatch] = useFormStore({ initialValues, transform, validate, notifyStateUpdate })
+  const actions = useMemo(() => useFormActions({ dispatch, formRef }), [dispatch, formRef])
+  const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
 
-    const [notifyStateUpdate, addUpdateHandler, removeUpdateHandler] = notifier()
-    const [stateRef, dispatch] = createStore({ initialValues, transform, validate, notifyStateUpdate })
-    const actions = useFormActions({ dispatch, formRef })
-    const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
-
-    formRef.current = {
-      ...actions,
-      stateRef,
-      submit,
-      onSubmit,
-      addUpdateHandler,
-      removeUpdateHandler
-    }
+  formRef.current = {
+    ...actions,
+    stateRef,
+    submit,
+    onSubmit,
+    addUpdateHandler,
+    removeUpdateHandler
   }
 
   return (
