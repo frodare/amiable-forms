@@ -74,7 +74,10 @@ export default ({ transform, validate } = {}) => {
     }
   }
 
-  const isValueChanging = action => action.type === actions.SET_VALUE || action.type === actions.SET_VALUES
+  const isValueChanging = action =>
+    action.type === actions.SET_VALUE ||
+    action.type === actions.SET_VALUES ||
+    action.type === actions.SET_VALUE_WITH_FIELD
 
   const postProcess = reduceFn => (state, action) => {
     let nextState = reduceFn(state, action)
