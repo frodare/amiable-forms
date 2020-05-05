@@ -2,12 +2,14 @@ import * as actions from './actions'
 import * as metaKeys from './metaKeys'
 import set from '../util/set'
 import clone from '../util/clone'
+import version from '../version'
 
 export const initialState = {
   cleanValues: {},
   values: {},
   fields: {},
   meta: {
+    version,
     touched: false,
     submitted: false,
     submitCount: 0,
@@ -44,6 +46,7 @@ export default ({ transform, validate } = {}) => {
     const error = validate && validFields ? validate(state.values) : undefined
 
     const newMeta = {
+      version,
       submitted: meta.submitted,
       submitting: meta.submitting,
       submitCount: meta.submitCount,

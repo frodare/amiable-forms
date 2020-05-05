@@ -4,11 +4,12 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "babel ./src -d ./dist",
+    "build": "node syncVersion.js; babel ./src -d ./dist",
     "dev": "babel ./src -d ./dist -w",
     "lint": "standard \"./src/**/*.js\"",
     "lint-fix": "standard --fix \"./src/**/*.js\"",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "syncVersion": "node syncVersion.js"
   },
   "keywords": [
     "react",
