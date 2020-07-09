@@ -26,7 +26,7 @@ export default ({ dispatch, formRef }) => {
   }
 
   const setValues = (valuesOrValuesGetter, options) => {
-    const currentValues = formRef.current.values
+    const currentValues = formRef.current.values || formRef.current.stateRef.current.values
     const values = isFunction(valuesOrValuesGetter) ? valuesOrValuesGetter(currentValues) : valuesOrValuesGetter
     dispatch({ type: actionTypes.SET_VALUES, values, options })
   }
