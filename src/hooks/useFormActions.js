@@ -14,19 +14,19 @@ export default ({ dispatch, formRef }) => {
   const clear = () => dispatch({ type: actionTypes.SET_VALUES, values: {} })
 
   const setValue = (name, valueOrValueGetter) => {
-    const currentValues = formRef.current.values
+    const currentValues = formRef.current.stateRef.current.values
     const value = isFunction(valueOrValueGetter) ? valueOrValueGetter(get(currentValues, name)) : valueOrValueGetter
     dispatch({ type: actionTypes.SET_VALUE, name, value })
   }
 
   const setValueWithField = (name, valueOrValueGetter, field) => {
-    const currentValues = formRef.current.values
+    const currentValues = formRef.current.stateRef.current.values
     const value = isFunction(valueOrValueGetter) ? valueOrValueGetter(get(currentValues, name)) : valueOrValueGetter
     dispatch({ type: actionTypes.SET_VALUE_WITH_FIELD, name, value, field })
   }
 
   const setValues = (valuesOrValuesGetter, options) => {
-    const currentValues = formRef.current.values
+    const currentValues = formRef.current.stateRef.current.values
     const values = isFunction(valuesOrValuesGetter) ? valuesOrValuesGetter(currentValues) : valuesOrValuesGetter
     dispatch({ type: actionTypes.SET_VALUES, values, options })
   }
