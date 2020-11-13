@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/frodare/amiable-forms#readme",
   "peerDependencies": {
-    "react": "^16.8.6"
+    "react": ">=16.8.6"
   },
   "devDependencies": {
     "@babel/compat-data": "7.9.0",
