@@ -21,7 +21,13 @@ const useFieldSetup = ({ name, validators }) => {
   const fieldStateRef = useRef({})
   const shouldUpdate = useMemo(() => createShouldUpdate({ name, validators, fieldStateRef }), [name, validators, fieldStateRef])
   const form = useForm({ shouldUpdate })
-  useEffect(() => () => form.removeField(name), [name])
+
+  useEffect(() => {
+    if (form.stateRef.current.fields[name]) {
+      console.error('AmiableForm: field {', name, '} has already been registered, field names should be unique in a form.')
+    }
+    return () => form.removeField(name)
+  }, [name])
 
   if (!fieldStateRef.current.setValue) {
     fieldStateRef.current = {

@@ -12,13 +12,15 @@ export default ({ shouldUpdate = ALWAYS_UPDATE } = {}) => {
   const form = formGetterRef.current
   const { addUpdateHandler, removeUpdateHandler } = form
 
+  const onStateUpdate = event => {
+    if (shouldUpdate(event)) render()
+  }
+
+  addUpdateHandler(onStateUpdate)
+
   useEffect(() => {
-    const onStateUpdate = (event) => {
-      if (shouldUpdate(event)) render()
-    }
-    addUpdateHandler(onStateUpdate)
     return () => removeUpdateHandler(onStateUpdate)
-  }, [addUpdateHandler, removeUpdateHandler, shouldUpdate])
+  }, [])
 
   return {
     ...form.stateRef.current,
