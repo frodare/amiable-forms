@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "allowJs": true,
+    "target": "es5",
+    "module": "es2015",
+    "jsx": "react",
+    "incremental": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true
+  },
+  "include": ["./src/**/*"],
+}
