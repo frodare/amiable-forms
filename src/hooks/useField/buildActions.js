@@ -8,7 +8,7 @@ export default ({ name, validators, parse, fieldStateRef, custom }) => {
     const { values } = fieldStateRef.current.stateRef.current
 
     const value = bypassParseDueToFocus ? val : parse(val, name)
-    const error = validate({ value, values, validators })
+    const error = validate(validators)(value, values)
     const valid = !error
     const touched = !!(field.touched || touch)
     const visited = touched || field.visited || false
