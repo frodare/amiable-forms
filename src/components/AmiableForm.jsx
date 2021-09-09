@@ -1,6 +1,7 @@
 import React, { useRef, createContext, useMemo } from 'react'
 import notifier from '../util/notifier'
-import useFormActions from '../hooks/useFormActions'
+// import useFormActions from '../hooks/useFormActions'
+import actionDispatchers from '../state/actionDispatchers'
 import useFormStore from '../state/useFormStore'
 import buildSubmitHandlers from '../util/buildSubmitHandlers'
 
@@ -12,7 +13,8 @@ const AmiableForm = props => {
 
   const [notifyStateUpdate, addUpdateHandler, removeUpdateHandler] = useMemo(notifier, [])
   const [stateRef, dispatch] = useFormStore({ initialValues, transform, validate, notifyStateUpdate })
-  const actions = useMemo(() => useFormActions({ dispatch, formRef }), [dispatch, formRef])
+  // const actions = useMemo(() => useFormActions(dispatch, formRef), [dispatch, formRef])
+  const actions = useMemo(() => actionDispatchers(formRef, dispatch), [formRef, dispatch])
   const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
 
   formRef.current = {

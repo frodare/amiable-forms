@@ -1,6 +1,6 @@
 import get from './get'
 
-export default name => ({ previous, current }) => {
+const valueChangedInState = (name: string) => ({ previous, current }: StateUpdateEvent) => {
   if (previous.meta !== current.meta) return true
   if (previous.fields[name] !== current.fields[name]) return true
   if (previous.values === current.values) return false
@@ -9,3 +9,5 @@ export default name => ({ previous, current }) => {
   const changed = currValue !== prevValue
   return changed
 }
+
+export default valueChangedInState
