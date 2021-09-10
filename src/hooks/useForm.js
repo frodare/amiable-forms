@@ -16,9 +16,8 @@ export default ({ shouldUpdate = ALWAYS_UPDATE } = {}) => {
     if (shouldUpdate(event)) render()
   }
 
-  addUpdateHandler(onStateUpdate)
-
   useEffect(() => {
+    addUpdateHandler(onStateUpdate)
     return () => removeUpdateHandler(onStateUpdate)
   }, [])
 

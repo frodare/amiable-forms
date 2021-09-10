@@ -12,8 +12,10 @@ const DEFAULT_FORMAT = v => v || v === 0 ? v : ''
 const DEFAULT_FIELD = {}
 
 const createShouldUpdate = ({ name, validators, fieldStateRef }) => {
-  const errorCheck = errorWillChangeInState({ name, validators, fieldStateRef })
+  // FIXME error check disabled, it was causing infinite loops for undefined values
+  const errorCheck = () => false // errorWillChangeInState({ name, validators, fieldStateRef })
   const valueCheck = valueChangedInState(name)
+
   return state => errorCheck(state) || valueCheck(state)
 }
 

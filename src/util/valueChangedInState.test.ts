@@ -58,6 +58,12 @@ test('field no change', () => {
   expect(valueChangedInState('foo')(event)).toBe(false)
 })
 
+test('field is undefined', () => {
+  event.previous.values.foo = undefined
+  event.current.values.foo = undefined
+  expect(valueChangedInState('foo')(event)).toBe(false)
+})
+
 const genState = (): FormState => ({
   cleanValues: {},
   fields: {},

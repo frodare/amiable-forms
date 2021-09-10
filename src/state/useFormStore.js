@@ -8,16 +8,16 @@ export default ({ initialValues, transform, validate, notifyStateUpdate }) => {
 
   const reducer = useCallback(reducerCreator(transform, validate), [transform, validate])
 
-  const dispatch = (...args) => console.log('dispatch blocked', args)
+  // const dispatch = (...args) => console.log('dispatch blocked', args)
 
-  adding in the reducer causes a infinite loop
+  // adding in the reducer causes a infinite loop
 
-  // const dispatch = useCallback(action => {
-  //   const previous = stateRef.current
-  //   const current = reducer(previous, action)
-  //   stateRef.current = current
-  //   notifyStateUpdate({ previous, current })
-  // }, [notifyStateUpdate, stateRef])
+  const dispatch = useCallback(action => {
+    const previous = stateRef.current
+    const current = reducer(previous, action)
+    stateRef.current = current
+    notifyStateUpdate({ previous, current })
+  }, [notifyStateUpdate, stateRef])
 
   // useEffect(() => {
   //   if (initialValues) {

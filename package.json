@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "babel ./src -d ./dist -w",
+    "dev": "tsc -w",
     "lint": "ts-standard",
     "test": "jest --watch",
     "syncVersion": "node syncVersion.js"

@@ -2,6 +2,7 @@ import normalizeEmpty from './normalizeEmpty'
 
 test('normalizeEmpty', () => {
   expect(normalizeEmpty('')).toBe('')
+  expect(normalizeEmpty('BOO!')).toEqual('BOO!')
   expect(normalizeEmpty(0)).toBe(0)
   expect(normalizeEmpty(NaN)).toBe(undefined)
   expect(normalizeEmpty(undefined)).toBe(undefined)
