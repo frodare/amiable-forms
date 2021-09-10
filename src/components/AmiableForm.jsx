@@ -19,7 +19,7 @@ const AmiableForm = props => {
   const formRef = useRef()
 
   const [notifyStateUpdate, addUpdateHandler, removeUpdateHandler] = useMemo(notifier, [])
-  const [stateRef, dispatch] = useFormStore({ transform, validate, notifyStateUpdate })
+  const [stateRef, dispatch] = useFormStore(transform, validate, notifyStateUpdate)
   const actions = useMemo(() => actionDispatchers(formRef, dispatch), [formRef, dispatch])
   const { submit, onSubmit } = buildSubmitHandlers({ stateRef, actions, props })
 

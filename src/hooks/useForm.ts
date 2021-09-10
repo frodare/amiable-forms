@@ -2,11 +2,18 @@ import { useContext, useEffect } from 'react'
 import { formContext } from '../components/AmiableForm'
 import useRender from '../hooks/useRender'
 
-const ALWAYS_UPDATE = () => true
+const ALWAYS_UPDATE = (): boolean => true
 
-export default ({ shouldUpdate = ALWAYS_UPDATE } = {}) => {
+type ShouldUpdateHandler = (event: StateUpdateEvent) => boolean
+
+interface UseFormOptions {
+  shouldUpdate?: ShouldUpdateHandler
+}
+
+const useForm = ({ shouldUpdate = ALWAYS_UPDATE }: UseFormOptions = {}): any => {
   const render = useRender()
   const formGetterRef = useContext(formContext)
+
   if (!formGetterRef.current) throw new Error('amiable-form hooks must be use inside a <AmiableForm>')
 
   const form = formGetterRef.current
@@ -26,3 +33,5 @@ export default ({ shouldUpdate = ALWAYS_UPDATE } = {}) => {
     ...form
   }
 }
+
+export default useForm

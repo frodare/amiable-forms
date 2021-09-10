@@ -2,7 +2,10 @@ interface Values {
   [key: string]: any
 }
 
+// FIXME
 type FormRef = any
+
+type StateRef = React.MutableRefObject<FormState>
 
 type Validator = (value: any, values: Values) => string | undefined
 
@@ -127,3 +130,7 @@ interface FormDispatchers {
   setValueWithField: SetValueWithFieldDispatcher
   setValues: SetValuesDispatcher
 }
+
+type Handler = (event: any) => void
+
+type HandlerSupplier = (handler: Handler) => void

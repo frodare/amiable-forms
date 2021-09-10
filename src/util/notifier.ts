@@ -1,6 +1,3 @@
-export type Handler = (event: any) => void
-
-type HandlerSupplier = (handler: Handler) => void
 
 const notifier = (): [Handler, HandlerSupplier, HandlerSupplier] => {
   const handlers: Handler[] = []
