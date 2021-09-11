@@ -4,22 +4,20 @@ import useRender from '../hooks/useRender'
 
 const ALWAYS_UPDATE = (): boolean => true
 
-type ShouldUpdateHandler = (event: StateUpdateEvent) => boolean
-
 interface UseFormOptions {
   shouldUpdate?: ShouldUpdateHandler
 }
 
-const useForm = ({ shouldUpdate = ALWAYS_UPDATE }: UseFormOptions = {}): any => {
+const useForm = ({ shouldUpdate = ALWAYS_UPDATE }: UseFormOptions = {}): UseFormReturn => {
   const render = useRender()
   const formGetterRef = useContext(formContext)
 
-  if (!formGetterRef.current) throw new Error('amiable-form hooks must be use inside a <AmiableForm>')
+  if (formGetterRef?.current === undefined) throw new Error('amiable-form hooks must be use inside a <AmiableForm>')
 
   const form = formGetterRef.current
   const { addUpdateHandler, removeUpdateHandler } = form
 
-  const onStateUpdate = event => {
+  const onStateUpdate: Handler = event => {
     if (shouldUpdate(event)) render()
   }
 

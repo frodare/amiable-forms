@@ -1,6 +1,47 @@
+
+type Submit = (...args: any[]) => void
+
+type OnSubmit = (event: React.SyntheticEvent) => void
+
+interface SubmitHandlers {
+  submit: Submit
+  onSubmit: OnSubmit
+}
+
+interface ProcessorFormState extends FormState, FormDispatchers {
+
+}
+
+type Processor = (values: Values, state: ProcessorFormState, ...args: any[]) => any
+
+interface AmiableFormState extends FormDispatchers {
+  stateRef: StateRef
+  submit: Submit
+  onSubmit: OnSubmit
+  addUpdateHandler: HandlerSupplier
+  removeUpdateHandler: HandlerSupplier
+}
+
+interface UseFormReturn extends FormState, AmiableFormState {
+
+}
+
+type AmiableFormStateRef = React.MutableRefObject<AmiableFormState>
+
+interface AmiableFormProps {
+  process: Processor
+  processInvalid: Processor
+  validate: FormValidator
+  transform: Transform
+  initialValues: Values
+  children: any
+}
+
 interface Values {
   [key: string]: any
 }
+
+type ShouldUpdateHandler = (event: StateUpdateEvent) => boolean
 
 // FIXME
 type FormRef = any

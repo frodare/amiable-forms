@@ -1,4 +1,3 @@
-
 const notifier = (): [Handler, HandlerSupplier, HandlerSupplier] => {
   const handlers: Handler[] = []
 

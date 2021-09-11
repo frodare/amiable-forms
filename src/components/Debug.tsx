@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { FC } from 'react'
 import useForm from '../hooks/useForm'
 
-const Debug = () => {
+const Debug: FC = () => {
   const { meta, fields, values, cleanValues } = useForm()
   return (
     <>

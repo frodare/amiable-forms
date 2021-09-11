@@ -6,7 +6,7 @@ const EMPTY_OPTIONS: SetValuesOptions = {
   merge: false
 }
 
-const actionDispatchers = (formRef: FormRef, dispatch: Dispatch): FormDispatchers => {
+const actionDispatchers = (stateRef: StateRef, dispatch: Dispatch): FormDispatchers => {
   const setField: SetFieldDispatcher = (name, field) => {
     const action: SetFieldAction = {
       type: actionTypes.SET_FIELD,
@@ -50,7 +50,7 @@ const actionDispatchers = (formRef: FormRef, dispatch: Dispatch): FormDispatcher
   }
 
   const setValue: SetValueDispatcher = (name, valueOrValueGetter) => {
-    const currentValues = formRef.current.stateRef.current.values
+    const currentValues = stateRef.current.values
     const value = isFunction(valueOrValueGetter) ? valueOrValueGetter(get(currentValues, name)) : valueOrValueGetter
     const action: SetValueAction = {
       type: actionTypes.SET_VALUE,
@@ -61,7 +61,7 @@ const actionDispatchers = (formRef: FormRef, dispatch: Dispatch): FormDispatcher
   }
 
   const setValueWithField: SetValueWithFieldDispatcher = (name, valueOrValueGetter, field) => {
-    const currentValues = formRef.current.stateRef.current.values
+    const currentValues = stateRef.current.values
     const value = isFunction(valueOrValueGetter) ? valueOrValueGetter(get(currentValues, name)) : valueOrValueGetter
     const action: SetValueWithFieldAction = {
       type: actionTypes.SET_VALUE_WITH_FIELD,
@@ -73,7 +73,7 @@ const actionDispatchers = (formRef: FormRef, dispatch: Dispatch): FormDispatcher
   }
 
   const setValues: SetValuesDispatcher = (valuesOrValuesGetter, options) => {
-    const currentValues = formRef.current.stateRef.current.values
+    const currentValues = stateRef.current.values
     const values = isFunction(valuesOrValuesGetter) ? valuesOrValuesGetter(currentValues) : valuesOrValuesGetter
     const action: SetValuesAction = {
       type: actionTypes.SET_VALUES,

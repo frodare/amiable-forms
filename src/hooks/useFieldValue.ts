@@ -1,10 +1,9 @@
 import { useCallback } from 'react'
 import useForm from './useForm'
 import get from '../util/get'
+import normalizeEmpty from '../util/normalizeEmpty'
 
-const normalizeEmpty = v => v || v === 0 ? v : undefined
-
-const shouldUpdateName = name => ({ previous, current }) => {
+const shouldUpdateName = (name: string): ShouldUpdateHandler => ({ previous, current }) => {
   if (previous.values === current.values) return false
   const currValue = get(current.values, name)
   const prevValue = get(previous.values, name)
@@ -12,7 +11,11 @@ const shouldUpdateName = name => ({ previous, current }) => {
   return changed
 }
 
-export default ({ name }) => {
+export interface Args {
+  name: string
+}
+
+export default ({ name }: Args): any => {
   const shouldUpdate = useCallback(shouldUpdateName(name), [name])
   const { values } = useForm({ shouldUpdate })
   return normalizeEmpty(get(values, name, undefined))
