@@ -26,6 +26,15 @@ interface UseFormReturn extends FormState, AmiableFormState {
 
 }
 
+interface FieldState extends UseFormReturn {
+  field: Field
+  value: any
+  cleanValue: any
+  bypassParseDueToFocus: boolean
+}
+
+type FieldStateRef = React.MutableRefObject<FieldState>
+
 type AmiableFormStateRef = React.MutableRefObject<AmiableFormState>
 
 interface AmiableFormProps {
@@ -161,6 +170,8 @@ type SetValueWithFieldDispatcher = (name: string, valueOrValueGetter: ValueGette
 
 type SetValuesDispatcher = (valuesOrValuesGetter: ValueGetter | any, options: SetValuesOptions | undefined) => void
 
+type FieldParser = (value: any) => any
+
 interface FormDispatchers {
   setField: SetFieldDispatcher
   setMetaValue: SetMetaValueDispatcher
@@ -175,3 +186,66 @@ interface FormDispatchers {
 type Handler = (event: any) => void
 
 type HandlerSupplier = (handler: Handler) => void
+
+type FieldSetFocused = (focused: boolean) => void
+type FieldSetVisited = () => void
+type FieldOnChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => void
+type FieldOnBlurHandler = () => void
+type FieldOnFocusHandler = () => void
+
+interface FieldSetValueOptions {
+  touch: boolean
+}
+
+type FieldSetValue = (value: any, options: FieldSetValueOptions | undefined) => void
+
+interface FieldActions {
+  setValueWithEffect: FieldSetValue
+  setFocused: FieldSetFocused
+  setVisited: FieldSetVisited
+  onChange: FieldOnChangeHandler
+  onBlur: FieldOnBlurHandler
+  onFocus: FieldOnFocusHandler
+}
+
+// interface FieldValue {
+//   value: any
+//   cleanValue: any
+//   // prevValue: any
+// }
+
+interface FieldComm {
+  bypassParseDueToFocus: boolean
+  requestRerun: boolean
+  prevValue: any
+  value: any
+  cleanValue: any
+  // move value and clean value onto this?
+}
+
+type FieldCommRef = React.MutableRefObject<FieldComm>
+
+interface UseFieldArgs {
+  name: string
+  validators: Validator[]
+  parse: FieldParser
+  format: FieldParser
+  parseWhenFocused: boolean
+  custom: any
+}
+
+interface UseFieldResult extends Field {
+  setValue: FieldSetValue
+  setVisited: FieldSetVisited
+  setFocused: FieldSetFocused
+  onChange: FieldOnChangeHandler
+  onBlur: FieldOnBlurHandler
+  onFocus: FieldOnFocusHandler
+  value: any
+  submitted: boolean
+  cleanValue: any
+  submitCount: number
+  submitting: boolean
+}
+
+// FIXME break this up into different files

@@ -8,8 +8,8 @@ const bool = (b: any): boolean => {
 
 const shouldUpdateName = (name: string): ShouldUpdateHandler => ({ previous, current }) => {
   if (previous.fields === current.fields) return false
-  const currValue = bool((current.fields[name]).valid)
-  const prevValue = bool((previous.fields[name]).valid)
+  const currValue = bool((current.fields[name])?.valid)
+  const prevValue = bool((previous.fields[name])?.valid)
   const changed = currValue !== prevValue
   return changed
 }
@@ -21,7 +21,7 @@ export interface Args {
 const useFieldIsValid = ({ name }: Args): boolean => {
   const shouldUpdate = useCallback(shouldUpdateName(name), [name])
   const { fields } = useForm({ shouldUpdate })
-  return bool((fields[name]).valid)
+  return bool((fields[name])?.valid)
 }
 
 export default useFieldIsValid
