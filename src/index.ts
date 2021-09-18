@@ -3,7 +3,7 @@ export { default as ValueUpdator } from './components/ValueUpdator'
 export { default as Debug } from './components/Debug'
 
 export { default as useForm } from './hooks/useForm'
-export { default as useField } from './hooks/useForm'
+export { default as useField } from './hooks/useField'
 export { default as useSubmit } from './hooks/useSubmit'
 
 export { default as useFieldValue } from './hooks/useFieldValue'
