@@ -2,13 +2,13 @@ import { useEffect, useRef, useMemo } from 'react'
 import useForm from '../useForm'
 import get from '../../util/get'
 import valueChangedInState from '../../util/valueChangedInState'
-// import errorWillChangeInState from '../../util/errorWillChangeInState'
+import errorWillChangeInState from '../../util/errorWillChangeInState'
 import normalizeEmpty from '../../util/normalizeEmpty'
 import useAutoSet from './useAutoSet'
 import validate from '../../util/validate'
 
-const DEFAULT_PARSE: FieldParser = v => v === '' ? undefined : v // || v === 0 ? v : undefined
-const DEFAULT_FORMAT: FieldParser = v => v === undefined || v === null ? '' : v // || v === 0 ? v : ''
+const DEFAULT_PARSE: FieldParser = v => v === '' ? undefined : v
+const DEFAULT_FORMAT: FieldParser = v => v === undefined || v === null ? '' : v
 
 const DEFAULT_FIELD: Field = {
   error: undefined,
@@ -21,13 +21,9 @@ const DEFAULT_FIELD: Field = {
   custom: undefined
 }
 
-// FIXME calling setValues casuses a SET_VALUE_WITH_EFFECT for every field, is this intentional?
-
-const createShouldUpdate = (name: string, validators: Validator[]): ShouldUpdateHandler => {
-  // FIXME error check disabled, it was causing infinite loops for undefined values
-  const errorCheck = (foo: StateUpdateEvent): boolean => false // errorWillChangeInState({ name, validators, fieldStateRef })
+const createShouldUpdate = (name: string, validators: Validator[], comm: FieldCommRef): ShouldUpdateHandler => {
+  const errorCheck = errorWillChangeInState(name, validators, comm)
   const valueCheck = valueChangedInState(name)
-
   return state => errorCheck(state) || valueCheck(state)
 }
 
@@ -40,7 +36,7 @@ const useField = ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAU
     cleanValue: undefined
   })
 
-  const shouldUpdate = useMemo(() => createShouldUpdate(name, validators), [name, validators])
+  const shouldUpdate = useMemo(() => createShouldUpdate(name, validators, comm), [name, validators, comm])
   const form = useForm({ shouldUpdate })
 
   const field = form.fields[name] === undefined ? DEFAULT_FIELD : form.fields[name]
@@ -110,14 +106,12 @@ const useField = ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAU
     /*
      * Field
      */
-    // ...fieldStateRef.current.field,
     ...field,
 
     /*
      * Field State Properties
      */
     value: format(comm.current.value),
-    // was this a bug? cleanValue: stateRef.current.cleanValue,
     cleanValue: comm.current.cleanValue,
 
     /*

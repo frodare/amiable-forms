@@ -1,6 +1,6 @@
 import get from './get'
 
-const valueChangedInState = (name: string) => ({ previous, current }: StateUpdateEvent) => {
+const valueChangedInState = (name: string): ShouldUpdateHandler => ({ previous, current }) => {
   if (previous.meta !== current.meta) return true
   if (previous.fields[name] !== current.fields[name]) return true
   if (previous.values === current.values) return false
