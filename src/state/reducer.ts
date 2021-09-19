@@ -136,8 +136,8 @@ const setField: Reducer = (state, action: SetFieldAction) => ({
       visited: action.field.visited,
       dirty: action.field.dirty,
       focused: action.field.focused,
-      registered: true,
-      custom: action.field.custom
+      custom: action.field.custom,
+      registered: action.field.registered || state.fields[action.name]?.registered || false
     }
   }
 })
@@ -207,7 +207,6 @@ const reset: Reducer = (state, action) => {
 
 const reducer = (transform: Transform | undefined, validate: FormValidator | undefined): Reducer => {
   return postProcess(transform, validate, (state, action) => {
-    console.log('DISPATCH ', action)
     switch (action.type) {
       case actions.SET_FIELD: return setField(state, action)
       case actions.SET_VALUE: return setValue(state, action)

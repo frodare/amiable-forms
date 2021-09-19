@@ -47,7 +47,7 @@ const useField = ({ name, validators = [], parse = DEFAULT_PARSE, format = DEFAU
   comm.current.bypassParseDueToFocus = field.focused && !parseWhenFocused
 
   useEffect(() => {
-    if (form.stateRef.current.fields[name] !== undefined) {
+    if (form.stateRef.current.fields[name]?.registered) {
       console.error('AmiableForm: field {', name, '} has already been registered, field names should be unique in a form.')
     }
     return () => form.removeField(name)
