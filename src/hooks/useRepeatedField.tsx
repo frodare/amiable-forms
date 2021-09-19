@@ -12,7 +12,7 @@ type ReIndexer = (i: number) => number
 
 interface Args {
   prefix: string
-  Component: FC // FIXME does this support class components too?
+  Component: FC
   props: any
   delimiter: string
   initialCount: number

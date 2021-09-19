@@ -120,13 +120,15 @@ const postProcess = (transform: Transform | undefined, validate: FormValidator |
   }
 }
 
-// FIXME change non-error to be saved as undefined
+const stripEmptyString = (s: FormError): FormError =>
+  s === '' ? undefined : s
+
 const setField: Reducer = (state, action: SetFieldAction) => ({
   ...state,
   fields: {
     ...state.fields,
     [action.name]: {
-      error: action.field.error,
+      error: stripEmptyString(action.field.error),
       valid: action.field.valid,
       touched: action.field.touched,
       visited: action.field.visited,

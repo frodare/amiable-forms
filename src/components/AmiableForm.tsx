@@ -14,8 +14,6 @@ const useSetInitialValues = (initialValues: Values | undefined, setValues: SetVa
   }, [initialValues, setValues])
 }
 
-// FIXME two way validation is not working: http://localhost:3000/#/MatchFieldForm
-
 const AmiableForm: FC<AmiableFormProps> = ({ process, processInvalid, validate, transform, initialValues, children }) => {
   const [notifyStateUpdate, addUpdateHandler, removeUpdateHandler] = useMemo(notifier, [])
   const [stateRef, dispatch] = useFormStore(transform, validate, notifyStateUpdate)
@@ -33,7 +31,7 @@ const AmiableForm: FC<AmiableFormProps> = ({ process, processInvalid, validate, 
     removeUpdateHandler
   }
 
-  const formRef = useRef(amiableFormState)
+  const formRef: FormRef = useRef(amiableFormState)
   formRef.current = amiableFormState
 
   return (

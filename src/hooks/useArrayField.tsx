@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { FC, ReactElement, useCallback } from 'react'
 import useForm from './useForm'
 import get from '../util/get'
 import deepEqual from '../util/deepEqual'
@@ -17,19 +17,23 @@ const removeIndex = (i: number) => (arr: any[]) => {
   return a
 }
 
+interface AnyKeys {
+  [key: string]: any
+}
+
 interface Args {
   name: string
-  Component: any // FIXME
-  props: any // FIXME
+  Component: FC<AnyKeys>
+  props: AnyKeys
 }
 
 interface Result {
   add: () => void
   remove: () => void
-  elements: any[] // FIXME
+  elements: ReactElement[]
 }
 
-export default ({ name, Component, props }: Args): Result => {
+const useArrayField = ({ name, Component, props }: Args): Result => {
   const shouldUpdate = useCallback(valueChanged(name), [name])
   const { values, setValue } = useForm({ shouldUpdate })
   const arr = get(values, name, [])
@@ -50,3 +54,5 @@ export default ({ name, Component, props }: Args): Result => {
 
   return { add, remove, elements }
 }
+
+export default useArrayField

@@ -52,8 +52,7 @@ interface Values {
 
 type ShouldUpdateHandler = (event: StateUpdateEvent) => boolean
 
-// FIXME
-type FormRef = any
+type FormRef = React.MutableRefObject<AmiableFormState>
 
 type StateRef = React.MutableRefObject<FormState>
 
@@ -78,8 +77,8 @@ interface FormMeta {
   visited: boolean
   valid: boolean
   dirty: boolean
-  error: string | undefined // FIXME can this be removed?
-  custom: any // FIXME can this be removed?
+  error: FormError
+  custom: any
 }
 
 interface FormState {
@@ -94,7 +93,7 @@ interface Fields {
 }
 
 interface Field {
-  error: string | undefined
+  error: FormError
   valid: boolean
   touched: boolean
   visited: boolean
@@ -247,5 +246,7 @@ interface UseFieldResult extends Field {
   submitCount: number
   submitting: boolean
 }
+
+type FormError = string | undefined
 
 // FIXME break this up into different files
