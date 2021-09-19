@@ -64,9 +64,11 @@ const updateMeta = (state: FormState, validate: FormValidator | undefined): Form
   const touched = orFlag(state.fields, 'touched')
   const dirty = orFlag(state.fields, 'dirty')
   const visited = meta.visited || orFlag(state.fields, 'visited')
+
   const validFields = andFlag(state.fields, 'valid')
-  // FIXME this validate function doesn't seem to be wired up correctly, it only affects error, maybe that is ok?
-  const error = validFields && validate !== undefined ? validate(state.values) : undefined
+  const error = (validFields && validate !== undefined) ? validate(state.values) : undefined
+
+  const valueForm = error === undefined || error === ''
 
   const newMeta: FormMeta = {
     version,
@@ -76,7 +78,7 @@ const updateMeta = (state: FormState, validate: FormValidator | undefined): Form
     touched,
     dirty,
     visited,
-    valid: validFields,
+    valid: validFields && valueForm,
     error,
     custom: undefined
   }
@@ -154,7 +156,6 @@ const setMeta: Reducer = (state, action: SetMetaValueAction) => {
 
   const key: keyof FormMeta = action.key
 
-  // FIXME find a better way to set a meta field from an action
   ;(meta as any)[key] = action.value
 
   if (action.key === metaKeys.SUBMITTED && action.value === true) {
@@ -190,12 +191,10 @@ const deregister = (fields: Fields): Fields =>
 const setValues: Reducer = (state, action: SetValuesAction) => {
   const changedValues = action.values
   const merge = action.options.merge
-  const keepMeta = action.options.merge // FIXME was this a bug? use options.keepMeta?
-
   return {
     ...state,
     values: merge ? { ...state.values, ...changedValues } : changedValues,
-    fields: keepMeta ? deregister(state.fields) : {}
+    fields: merge ? deregister(state.fields) : {}
   }
 }
 
@@ -205,7 +204,7 @@ const reset: Reducer = (state, action) => {
     values: state.cleanValues
   }
 }
-// FIXME changed the input parameters of this function
+
 const reducer = (transform: Transform | undefined, validate: FormValidator | undefined): Reducer => {
   return postProcess(transform, validate, (state, action) => {
     console.log('DISPATCH ', action)

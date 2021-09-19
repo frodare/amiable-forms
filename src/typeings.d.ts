@@ -207,19 +207,12 @@ interface FieldActions {
   onFocus: FieldOnFocusHandler
 }
 
-// interface FieldValue {
-//   value: any
-//   cleanValue: any
-//   // prevValue: any
-// }
-
 interface FieldComm {
   bypassParseDueToFocus: boolean
   requestRerun: boolean
   prevValue: any
   value: any
   cleanValue: any
-  // move value and clean value onto this?
 }
 
 type FieldCommRef = React.MutableRefObject<FieldComm>
@@ -248,5 +241,3 @@ interface UseFieldResult extends Field {
 }
 
 type FormError = string | undefined
-
-// FIXME break this up into different files

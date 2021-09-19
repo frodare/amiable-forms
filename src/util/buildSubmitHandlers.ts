@@ -4,7 +4,6 @@ import set from '../util/set'
 
 const NOOP: Processor = () => { }
 
-// FIXME pull out Field filtering and test
 const reduceFieldValue = (allValues: Values) => (fieldValues: Values, fieldName: string) => {
   const value = get(allValues, fieldName)
   if (value === undefined || value === null) return fieldValues
